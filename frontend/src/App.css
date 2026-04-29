@@ -1,0 +1,40 @@
+#root {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+
+}
+
+#gymChat{
+  float: left;
+  width: 500px;
+  height: 1050px;
+  text-align: left;
+}
+
+body {
+  background-color: gainsboro;
+}
+.Header .login, .Header .signup,.Header .logout {
+  text-decoration: none;
+  color: black;
+  float: right;
+}
+.Menu table thead tr th a, .Menu table tbody tr td a{
+  text-decoration: none;
+  color: black;
+align-items: center;
+text-align: center;
+}
+.Menu table{
+  margin: 0 auto;
+}
+.Menu table tbody{
+  visibility: hidden;
+}
+
+.Menu table:hover tbody{
+  visibility: visible;
+}
