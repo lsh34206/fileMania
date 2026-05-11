@@ -164,7 +164,7 @@ async sendBid(
     auction_id: data.gymId,
     sender_id: user._id,
     sender_name: user.name,
-    message: `${user.name}님이 ${data.bidPrice}원 입찰`,
+    message: `${user.name}님이 ${data.bidPrice*100}원 입찰`,
     message_type: 'bid',
     bid_price: data.bidPrice,
     room_id:data.gymId,

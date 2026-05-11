@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client'
 import '../App.css'
 import { DateUtils } from '../../../backend/src/utils/dateUtils'
 const ngrok = "https://2359-124-194-149-252.ngrok-free.app";
-const socket: Socket = io(ngrok, {
+const socket: Socket = io("http://localhost:8080", {
   withCredentials: true
 })
 
@@ -14,6 +14,9 @@ type FileDataType = {
   name: string
   id: string
   user_id?: string
+  gym: any,
+  bidsList: any[],
+  chatList: any[],
 }
 
 type ChatType = {
@@ -33,6 +36,9 @@ function FileViewGym() {
     writer_is_me: false,
     name: '',
     id: '',
+    gym: null,
+    bidsList: [],
+    chatList: [],
   })
 
   const [chatList, setChatList] = useState<ChatType[]>([])
@@ -40,7 +46,9 @@ function FileViewGym() {
   const [bidPrice, setBidPrice] = useState('')
   const [currentPrice, setCurrentPrice] = useState(0)
   const [highestBidder, setHighestBidder] = useState('')
-
+  const [bidsList, setBidsList] = useState<any[]>([])
+  const [gym, setGym] = useState<any>(null)
+  const [endTime, setEndTime] = useState<string>('')
   const joinedRef = useRef(false)
 
   const pathParts = window.location.pathname.split('/').filter((item) => item !== '')
@@ -56,8 +64,11 @@ function FileViewGym() {
         setData(res.data)
 
         if (res.data.file) {
-          setCurrentPrice(res.data.file.current_price ?? res.data.file.start_price ?? 0)
-          setHighestBidder(res.data.file.highest_bidder_name ?? '')
+          setCurrentPrice(res.data.gym.current_price ?? res.data.gym.start_price ?? 0)
+          setHighestBidder(res.data.gym.highest_bidder_name ?? '')
+          setChatList(res.data.chatList)
+          setBidsList(res.data.bidsList)
+          setEndTime(res.data.gym.end_time)
         }
       })
       .catch((err) => {
@@ -67,7 +78,11 @@ function FileViewGym() {
 
   useEffect(() => {
     if (!data.name || joinedRef.current) return
-
+    if (data.gym.status === 'ended') {
+      alert('종료된 경매입니다.');
+    location.href = '/download/gym';
+    
+    }
     joinedRef.current = true
 
     socket.emit('join_gym_room', {
@@ -173,12 +188,12 @@ function FileViewGym() {
       <h1>{data.file.title}</h1>
 
       <p>크기: {data.file.size}</p>
-      <p>주최자: {data.file.uploader}</p>
-      <p>시작가: {data.file.start_price}원</p>
+      <p>주최자: {data.gym.seller_name}</p>
+      <p>시작가: {data.gym.start_price}원</p>
 
       <p>현재가: {currentPrice}원</p>
       <p>최고 입찰자: {highestBidder || '없음'}</p>
-      <p>마감시간: {DateUtils.date_to_string(data.file.end_time)}</p>
+        <p>마감시간: {DateUtils.date_to_string(endTime)}</p>
 
       {data.writer_is_me && <button onClick={deleteFile}>경매 폐쇄</button>}
 

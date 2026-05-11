@@ -44,7 +44,7 @@ export class listViewService{
 
     async gym_view(type:string,name:string){
         try{
-        var writer_is_me:boolean = false;
+      
         if(!['image','video','audio','document','app'].includes(type)){
             return { files: [], id: [] }
         }
@@ -58,7 +58,8 @@ export class listViewService{
         const id = files.map(f => new Types.ObjectId(f._id))
         const end_time = files.map(f => DateUtils.date_to_string(f.end_time));
         const start_price = files.map(f => f.start_price);
-      
+   
+   
         return { files, id ,name:name, end_time:DateUtils.date_to_string( end_time), start_price:start_price};
     }catch(error){
         console.log(error)

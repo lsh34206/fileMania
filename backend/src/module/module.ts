@@ -15,7 +15,10 @@ import { downloadService } from "src/service/download";
 import { downloadController } from "src/controller/downloadController";
 import { ViewService } from "src/service/view";
 import { socketModule } from "./socketModule";
+
 import { usersSchema,filesSchema, gymsSchema, gymResultsSchema, gymBidsSchema, gymChatsSchema } from "src/db/schema";
+import { ScheduleModule } from "@nestjs/schedule";
+import { cornService } from "src/service/cronService";
 const fileRoot = ServeStaticModule.forRoot({
     rootPath: join(process.cwd(), 'files'),
     serveRoot: '/files',
@@ -45,9 +48,15 @@ const mongoSchema = MongooseModule.forFeature([{name:'users',schema:usersSchema}
 
 @Module(
   {
-    controllers: [mainController,fileController,viewController,writeManagerController,downloadController],
-  providers:[authService,UploadService,listViewService,writeManagerService,ViewService,downloadService],
-  imports:[mongoModule,mongoSchema,fileRoot,socketModule]
+    controllers: [mainController,fileController,
+      viewController,writeManagerController,
+      downloadController],
+  providers:[authService,UploadService,
+    listViewService,writeManagerService,
+    ViewService,downloadService,cornService],
+  imports:[mongoModule,mongoSchema,
+    fileRoot,socketModule,
+    ScheduleModule.forRoot()]
 }
 )
 

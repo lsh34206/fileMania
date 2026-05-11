@@ -9,11 +9,11 @@ export const usersSchema = new Schema({
     id: {type: String, required: true},
     createdAt: { type: Date, default: DateUtils.now_date() },
     isActive: { type: Number, default: 1 },
-   /* role: { type: String, default: 'user' },
+   role: { type: String, default: 'user' },
     point: {type: Number, default: 0},
     massege_list: {type: Array, default: []},
     writer_count: {type: Number, default: 0},
-    liked_file_list: {type: Array, default: []}*/
+    liked_file_list: {type: Array, default: []}
 
 
 });

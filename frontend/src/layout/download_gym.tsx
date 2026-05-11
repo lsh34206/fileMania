@@ -75,7 +75,7 @@ function FileListGym() {
 				<div className={`fileList_${category}`}>
 					{data.files.map((f:any, i: number) => (
 						<div key={data.id?.[i] ?? i}>
-							<a href={`/download/gym/${category}/${data.id?.[i]}`}>No.{i+1}&nbsp;&nbsp;&nbsp;{f.title}&nbsp;&nbsp;&nbsp;{f.size}&nbsp;&nbsp;&nbsp;입찰가:{data.start_price?.[i]}원&nbsp;&nbsp;&nbsp;마감시간:{DateUtils.date_to_string(f.end_time)}</a> &nbsp;&nbsp;&nbsp;{!f.writer_is_me ? <span></span> : <a onClick={() => deleteFile(data.id?.[i])}>폐쇄</a>}<br /><br />    
+							<a href={`/download/gym/${category}/${data.id?.[i]}`}>No.{i+1}&nbsp;&nbsp;&nbsp;{f.title}&nbsp;&nbsp;&nbsp;{f.size}&nbsp;&nbsp;&nbsp;입찰가:{data.start_price?.[i]}원&nbsp;&nbsp;&nbsp;마감시간:{DateUtils.date_to_string(f.end_time)}</a> &nbsp;&nbsp;&nbsp;{f.uploader===data.name ? <span></span> : <a onClick={() => deleteFile(data.id?.[i])}>폐쇄</a>}<br /><br />    
 						</div>
 					))}
 				</div>

@@ -2,6 +2,7 @@ import { Controller,Get,Post,Req,Res,Param } from "@nestjs/common";
 import {listViewService } from "src/service/listView";
 import { authService } from "src/service/auth";
 import { ViewService } from "src/service/view";
+import { write } from "fs";
 
 @Controller()
 export class viewController{
@@ -26,8 +27,8 @@ export class viewController{
        
         const name = await this.login_auth(req.cookies.user);
 
+     
         const files =  await this.listViewService.gym_view(type,name);
-
         return {files:files.files,id:files.id};
     }
 
@@ -64,6 +65,8 @@ if(download_type==="gym"){
 
     return { file:ret.file,name:ret.name,writer_is_me:ret.writer_is_me,id:ret.id,user_id:ret.user_id,
         chatList:ret.chatList,
+        bidsList:ret.bidsList,
+        gym:ret.gym
     }
 
 

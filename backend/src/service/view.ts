@@ -110,7 +110,11 @@ export class ViewService {
           console.log(writer_is_me)
           collection = await this.modelMap["gymChats"];
           const chatsList = await collection.find({auction_id:file._id.toString()});
-          return { file:file,name:name.name,writer_is_me:writer_is_me,id:id,user_id:user_id,chatList:chatsList};
+          collection = await this.modelMap["gymBids"];
+          const bidsList = await collection.find({auction_id:file._id.toString()});
+          collection = await this.modelMap["gyms"];
+          const gym = await collection.findOne({file_id:file._id});
+          return { file:file,name:name.name,writer_is_me:writer_is_me,id:id,user_id:user_id,chatList:chatsList,bidsList:bidsList,gym:gym};
 
           
       }catch(error){

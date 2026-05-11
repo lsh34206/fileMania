@@ -81,7 +81,7 @@ function FileListFree() {
 								No.{i + 1}&nbsp;&nbsp;&nbsp;{f.title}&nbsp;&nbsp;&nbsp;{f.size}
 							</a>{' '}
 							&nbsp;&nbsp;&nbsp;
-							{!data.writer_is_me ? (
+							{data.writer_is_me ? (
 								<span />
 							) : (
 								<a onClick={() => deleteFile(data.id?.[i])}>삭제</a>
