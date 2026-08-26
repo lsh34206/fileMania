@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client'
 import '../App.css'
 import { DateUtils } from '../../../backend/src/utils/dateUtils'
 const ngrok = "https://2359-124-194-149-252.ngrok-free.app";
-const socket: Socket = io("http://localhost:8080", {
+const socket: Socket = io("http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080", {
   withCredentials: true
 })
 
@@ -59,7 +59,7 @@ function FileViewGym() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/download/gym/${type}/${id}`, {
+      .get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/download/gym/${type}/${id}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -175,7 +175,7 @@ function FileViewGym() {
 
   const deleteFile = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/writer_delete/gym/${type}/${id}`, {
+      const res = await axios.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/writer_delete/gym/${type}/${id}`, {
         withCredentials: true,
       })
 

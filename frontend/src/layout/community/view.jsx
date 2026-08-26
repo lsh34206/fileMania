@@ -29,7 +29,7 @@ function View() {
         setError(null)
         try {
             const res = await axios.get(
-                `http://localhost:8080/community/${category}/${id}`,
+                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/${category}/${id}`,
                 { withCredentials: true },
             ).then(res => {
                 console.log(res.data)
@@ -61,7 +61,7 @@ function View() {
     const likePost = async () => {
         try {
             const res = await axios.post(
-                `http://localhost:8080/community/like/${id}`,
+                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/like/${id}`,
                 {},
                 { withCredentials: true },
             )
@@ -85,7 +85,7 @@ function View() {
         }
         try {
             const res = await axios.post(
-                `http://localhost:8080/community/comment/${id}`,
+                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/comment/${id}`,
                 { content:content, parent_id: parentId ?? null ,writer:myId ?? null},
                 { withCredentials: true },
             )
@@ -104,7 +104,7 @@ function View() {
     const deleteComment = async (commentId) => {
         try{
             const res = await axios.post(
-                `http://localhost:8080/community/comment_delete/${id}/${category}/${commentId}`,
+                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/comment_delete/${id}/${category}/${commentId}`,
                 { },
                 { withCredentials: true },
             )
@@ -123,7 +123,7 @@ function View() {
     const deletePost = async (postId) => {
         try{
             const res = await axios.post(
-                `http://localhost:8080/community/post_delete/${postId}/${category}`,
+                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/post_delete/${postId}/${category}`,
                 { },
                 { withCredentials: true },
             )
@@ -142,7 +142,7 @@ function View() {
     const likeComment = async (commentId) => {
         try {
             const res = await axios.post(
-                `http://localhost:8080/community/comment_like/${id}/${commentId}`,
+                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/comment_like/${id}/${commentId}`,
                 { },
                 { withCredentials: true },
             )

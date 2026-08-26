@@ -10,7 +10,7 @@ function Home() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get('http://localhost:8080/community_featured', { withCredentials: true })
+        axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community_featured', { withCredentials: true })
             .then((res) => {
                 if (cancelled) return
                 setPost(res.data.post ?? null)
@@ -28,7 +28,7 @@ function Home() {
     useEffect(() => {
         let cancelled = false
         const fetchOnline = () => {
-            axios.get('http://localhost:8080/online_users', { withCredentials: true })
+            axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/online_users', { withCredentials: true })
                 .then((res) => {
                     if (!cancelled) setOnlineUsers(res.data.users ?? [])
                 })

@@ -17,7 +17,7 @@ function FileListPaid() {
 			setError(null)
 			try {
 				const res = await axios.post(
-					`http://localhost:8080/download/paid/${category}`,
+					`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/download/paid/${category}`,
 					{ keyword },
 					{ withCredentials: true },
 				)
@@ -49,7 +49,7 @@ function FileListPaid() {
 	const deleteFile = async (id: string) => {
 		try {
 			await axios
-				.get(`http://localhost:8080/writer_delete/paid/${category}/${id}`, {
+				.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/writer_delete/paid/${category}/${id}`, {
 					withCredentials: true,
 				})
 				.then((res) => {

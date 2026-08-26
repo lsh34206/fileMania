@@ -29,7 +29,7 @@ console.log(formData);
 
 
 
-        const res = await axios.post('http://localhost:8080/file_upload_ok/'+formData.type, sendFormData,
+        const res = await axios.post('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/file_upload_ok/'+formData.type, sendFormData,
             {
               withCredentials: true
             });

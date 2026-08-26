@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import {Types} from "mongoose";
 import '../../App.css'
 
 function WriterList() {
@@ -20,7 +19,7 @@ function WriterList() {
             setError(null)
             try {
                 const res = await axios.post(
-                    `http://localhost:8080/community/${category}`,
+                    `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/${category}`,
                     { keyword, sort },
                     { withCredentials: true },
                 )
@@ -100,8 +99,8 @@ function WriterList() {
             {!loading && posts.length > 0 && (
                 <div className='file-list'>
                     {posts.map((p, i) => (
-                        <div className='file-item' key={new Types.ObjectId(p._id) ?? i}>
-                            <a href={`/community/${category}/${new Types.ObjectId(p._id)}`}>
+                        <div className='file-item' key={p._id ?? i}>
+                            <a href={`/community/${category}/${p._id}`}>
                                 [{p.category}]&nbsp;&nbsp;&nbsp;{p.title}
                             </a>
                             <span className='post-meta-right'>

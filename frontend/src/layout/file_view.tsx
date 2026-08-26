@@ -20,7 +20,7 @@ function FileView() {
    useEffect(() => {
  
 
-    axios.get(`http://localhost:8080/download/${download_type}/${type}/${id}`, {
+    axios.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/download/${download_type}/${type}/${id}`, {
       withCredentials: true
     }).then(res => setData(res.data))
 }, [type, id])
@@ -30,7 +30,7 @@ function FileView() {
     const deleteFile = async (id:string) => {
         try{
 
-            const res = await axios.get(`http://localhost:8080/writer_delete/free/${type}/${id}`, { withCredentials: true }).then(res => {
+            const res = await axios.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/writer_delete/free/${type}/${id}`, { withCredentials: true }).then(res => {
                 if(res.data.success){
                     alert('파일 삭제 완료')
                     location.href = '/download/free';
@@ -60,7 +60,7 @@ const locked = data.file.download_type === 'paid' && !data.purchased;
 const purchaseHref = `/purchase/${type}/${id}`;
 
 const actionLink = data.file.download_type === 'free' ? (
-  <a href={`http://localhost:8080/download_file/${type}/${id}`} className='view-download'>
+  <a href={`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/download_file/${type}/${id}`} className='view-download'>
     {data.file.title + "  다운로드"}
   </a>
 ) : locked ? (
@@ -68,7 +68,7 @@ const actionLink = data.file.download_type === 'free' ? (
     {data.file.title + "  구매하기 (" + data.file.price + "원)"}
   </a>
 ) : data.file.download_type === 'paid' ? (
-  <a href={`http://localhost:8080/download_file/${type}/${id}`} className='view-download'>
+  <a href={`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/download_file/${type}/${id}`} className='view-download'>
     {data.file.title + "  다운로드("+data.file.price+")원"}
   </a>
 ) : <span></span>;
@@ -78,11 +78,11 @@ if (data.file.type === 'image') {
     content = (<div>
         {locked ? (
           <div className='purchase-preview'>
-            <img src={`http://localhost:8080/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
+            <img src={`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
             <div className='purchase-overlay'><span>구매 후 확인 가능합니다</span></div>
           </div>
         ) : (
-          <img src={`http://localhost:8080${src}`} alt={data.file.title} width="500px" height="500px" className='file_view_image'/>
+          <img src={`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080${src}`} alt={data.file.title} width="500px" height="500px" className='file_view_image'/>
         )}
         <br />
         {actionLink}
@@ -91,11 +91,11 @@ if (data.file.type === 'image') {
     content = (<div>
         {locked ? (
           <div className='purchase-preview'>
-            <img src={`http://localhost:8080/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
+            <img src={`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
             <div className='purchase-overlay'><span>구매 후 재생 가능합니다</span></div>
           </div>
         ) : (
-          <video src={`http://localhost:8080${src}`} controls className='file_view_video'/>
+          <video src={`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080${src}`} controls className='file_view_video'/>
         )}
         <br/>
         {actionLink}
@@ -105,7 +105,7 @@ if (data.file.type === 'image') {
         {locked ? (
           <div className='purchase-locked'><span>구매 후 재생할 수 있습니다.</span></div>
         ) : (
-          <audio src={`http://localhost:8080${src}`} controls className='file_view_audio'/>
+          <audio src={`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080${src}`} controls className='file_view_audio'/>
         )}
         <br/>
         {actionLink}

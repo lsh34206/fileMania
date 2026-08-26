@@ -15,7 +15,7 @@ function Write() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get('http://localhost:8080/mypage', { withCredentials: true })
+        axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/mypage', { withCredentials: true })
             .then((res) => {
                 if (!cancelled) setIsAdmin(res.data.user?.role === 'admin')
             })
@@ -39,7 +39,7 @@ function Write() {
                 return
             }
 
-            const res = await axios.post(`http://localhost:8080/community/write_ok/${formData.category}`, {data:JSON.stringify(formData)},
+            const res = await axios.post(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/write_ok/${formData.category}`, {data:JSON.stringify(formData)},
                 {
                     withCredentials: true
                 })

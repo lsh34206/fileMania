@@ -28,7 +28,7 @@ function MyPage() {
             setLoading(true)
             setError(null)
             try {
-                const res = await axios.get('http://localhost:8080/mypage', { withCredentials: true })
+                const res = await axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/mypage', { withCredentials: true })
                 if (!cancelled) {
                     setUser(res.data.user ?? null)
                     setBio(res.data.user?.bio ?? '')
@@ -83,7 +83,7 @@ function MyPage() {
     const saveBio = async () => {
         setSavingBio(true)
         try {
-            const res = await axios.post('http://localhost:8080/mypage/bio', { bio }, { withCredentials: true })
+            const res = await axios.post('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/mypage/bio', { bio }, { withCredentials: true })
             if (res.data.success) {
                 setUser({ ...user, bio: res.data.user?.bio ?? bio })
                 setEditingBio(false)

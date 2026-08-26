@@ -3,7 +3,7 @@ import axios from 'axios'
 import { io } from 'socket.io-client'
 import '../../App.css'
 
-const socket = io('http://localhost:8080', {
+const socket = io('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080', {
     withCredentials: true,
 })
 
@@ -40,7 +40,7 @@ function ChatRoom() {
     // 로그인 정보(userId) 로드
     useEffect(() => {
         let cancelled = false
-        axios.get('http://localhost:8080/chat', { withCredentials: true })
+        axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/chat', { withCredentials: true })
             .then((res) => {
                 if (cancelled) return
                 setName(res.data.name ?? null)

@@ -12,7 +12,7 @@ async function bootstrap() {
 app.use(cookieParser());
 
     app.enableCors({
-        origin: ["http://localhost:5173"],
+        origin: ["http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com"],
         credentials:true
       });
       

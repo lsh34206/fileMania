@@ -16,7 +16,7 @@ function Singup() {
             return;
         }else{
             try{
-                 const res = await fetch(`http://localhost:8080/singup_ok`, {
+                 const res = await fetch(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/singup_ok`, {
             method: 'POST',
             body: JSON.stringify({name: name, id: id, email: email, password: password,password_check:password_check}),
             headers: {

@@ -13,7 +13,7 @@ function Profile() {
     useEffect(() => {
         let cancelled = false
         setLoading(true)
-        axios.get(`http://localhost:8080/profile/${encodeURIComponent(name)}`, { withCredentials: true })
+        axios.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/profile/${encodeURIComponent(name)}`, { withCredentials: true })
             .then((res) => {
                 if (!cancelled) setUser(res.data.user ?? null)
             })
