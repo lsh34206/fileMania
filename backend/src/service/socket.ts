@@ -16,7 +16,7 @@ import { DateUtils } from 'src/utils/dateUtils';
 
   @WebSocketGateway({
     cors: {
-      origin: ['http://localhost:5173',"https://2359-124-194-149-252.ngrok-free.app"],
+      origin:true,
       credentials: true
     },
   })

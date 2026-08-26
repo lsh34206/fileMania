@@ -131,7 +131,7 @@ function Menu() {
 function App() {
 
   useEffect(() => {
-    const socket = io('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080', { withCredentials: true })
+    const socket = io( { withCredentials: true })
     socket.on('force_logout', (data: any) => {
       alert(data?.message || '계정이 제재되어 로그아웃되었습니다.')
       window.location.href = '/login'
