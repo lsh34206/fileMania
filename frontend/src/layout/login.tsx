@@ -25,13 +25,15 @@ function Login() {
         });
     }
     return (
-        <div className='Login'>
-                    <h1>로그인</h1>
-                <br /><form onSubmit={login}>
-                <input type="text" placeholder="아이디" name="id" />
-                <input type="password" placeholder="비밀번호" name="password" />
-                <button type="submit" >로그인</button>
-            </form>
+        <div className='Login auth-wrap'>
+            <div className='auth-card'>
+                <h1>로그인</h1>
+                <form onSubmit={login} className='form-stack'>
+                    <input className='field' type="text" placeholder="아이디" name="id" />
+                    <input className='field' type="password" placeholder="비밀번호" name="password" />
+                    <button className='btn btn-primary btn-block' type="submit">로그인</button>
+                </form>
+            </div>
         </div>
     )
 }

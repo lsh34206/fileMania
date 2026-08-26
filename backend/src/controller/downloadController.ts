@@ -1,4 +1,4 @@
-import { Controller,Get,Post,Req,Body,Res,Param,BadRequestException , UseInterceptors, UploadedFile } from "@nestjs/common";
+import { Controller,Get,Post,Req,Body,Res,Param,BadRequestException, UseInterceptors, UploadedFile } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { diskStorage} from 'multer';
@@ -16,14 +16,15 @@ export class downloadController{
 
     @Get("/:type/:id")
     async download(
+    @Req() req:any,
     @Param("type") type: string,
     @Param("id") id: string, @Res() res:Response){
         try{
-            const result = await this.downloadService.download_file(type,id);
-               
+            const result = await this.downloadService.download_file(type,id,req.cookies.user);
+
 
             if (!result.success || !result.path || !result.name) {
-                return res.status(404).json(result);
+                return res.status((result as any).status ?? 404).json(result);
               }
               
          

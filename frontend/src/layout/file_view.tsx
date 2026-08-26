@@ -8,9 +8,10 @@ function FileView() {
     file:any,
     writer_is_me:Boolean,
     name:String,
-    id:String
+    id:String,
+    purchased:Boolean
    }
-    const [data, setData] = useState<DataType>({file:null,writer_is_me:false,name:"",id:""})
+    const [data, setData] = useState<DataType>({file:null,writer_is_me:false,name:"",id:"",purchased:true})
     const pathParts = window.location.pathname.split("/").filter(item => item !== '');
     const type = pathParts[pathParts.length - 2];
     const download_type = pathParts[pathParts.length - 3];
@@ -43,66 +44,80 @@ function FileView() {
         }
     }
 
-    if (data.file === null) {
+    if (!data.file) {
         return (
-            <div>
+            <div className='state'>
                 로딩중...
             </div>
         )
     }
-    const fixedPath = (data.file.path || '').replace(/^\.\//, '/'); // 미리보기/플레이어용
-    const src = `${fixedPath}`;
+    const src = `/media/${type}/${id}`; // 인증 기반 미리보기/플레이어용
     console.log(src);
     const downloadHref = `/download/file/${type}/${id}`; // 강제 다운로드 라우트
     
  
+const locked = data.file.download_type === 'paid' && !data.purchased;
+const purchaseHref = `/purchase/${type}/${id}`;
+
+const actionLink = data.file.download_type === 'free' ? (
+  <a href={`http://localhost:8080/download_file/${type}/${id}`} className='view-download'>
+    {data.file.title + "  다운로드"}
+  </a>
+) : locked ? (
+  <a href={purchaseHref} className='view-download view-purchase'>
+    {data.file.title + "  구매하기 (" + data.file.price + "원)"}
+  </a>
+) : data.file.download_type === 'paid' ? (
+  <a href={`http://localhost:8080/download_file/${type}/${id}`} className='view-download'>
+    {data.file.title + "  다운로드("+data.file.price+")원"}
+  </a>
+) : <span></span>;
+
 var content = null;
 if (data.file.type === 'image') {
     content = (<div>
-        <img src={`http://localhost:8080${src}`} alt={data.file.title} width="500px" height="500px" className='file_view_image'/>
+        {locked ? (
+          <div className='purchase-preview'>
+            <img src={`http://localhost:8080/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
+            <div className='purchase-overlay'><span>구매 후 확인 가능합니다</span></div>
+          </div>
+        ) : (
+          <img src={`http://localhost:8080${src}`} alt={data.file.title} width="500px" height="500px" className='file_view_image'/>
+        )}
         <br />
-        {data.file.download_type=="free"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드"}
-        </a> : data.file.download_type=="paid"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드("+data.file.price+")원"}
-        </a>:<span></span>}
+        {actionLink}
       </div>)
 } else if (data.file.type === 'video') {
     content = (<div>
-        <video src={`http://localhost:8080${src}`} controls className='file_view_video'/>
+        {locked ? (
+          <div className='purchase-preview'>
+            <img src={`http://localhost:8080/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
+            <div className='purchase-overlay'><span>구매 후 재생 가능합니다</span></div>
+          </div>
+        ) : (
+          <video src={`http://localhost:8080${src}`} controls className='file_view_video'/>
+        )}
         <br/>
-        {data.file.download_type=="free"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드"}
-        </a> : data.file.download_type=="paid"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드("+data.file.price+")원"}
-        </a>:<span></span>}
+        {actionLink}
       </div>)
 } else if (data.file.type === 'audio') {
         content = (<div>
-        <audio src={`http://localhost:8080${src}`} controls className='file_view_audio'/>
+        {locked ? (
+          <div className='purchase-locked'><span>구매 후 재생할 수 있습니다.</span></div>
+        ) : (
+          <audio src={`http://localhost:8080${src}`} controls className='file_view_audio'/>
+        )}
         <br/>
-        {data.file.download_type=="free"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드"}
-        </a> : data.file.download_type=="paid"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드("+data.file.price+")원"}
-        </a>:<span></span>}
+        {actionLink}
       </div>)
 } else if (data.file.type === 'document') {
     content = (<div>
-        {data.file.download_type=="free"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드"}
-        </a> : data.file.download_type=="paid"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드("+data.file.price+")원"}
-        </a>:<span></span>}
+        {actionLink}
         <br/>
       </div>)
 } else if (data.file.type === 'app') {
     content = (<div>
-       {data.file.download_type=="free"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드"}
-        </a> : data.file.download_type=="paid"?<a href={`http://localhost:8080/download_file/${type}/${id}`} className='file_view_image'>
-          {data.file.title + "  다운로드("+data.file.price+")원"}
-        </a>:<span></span>}
+       {actionLink}
         <br />
       </div>)
 }
@@ -121,16 +136,25 @@ if (data.file.type === 'image') {
         : '프로그램/앱';
 
     return (
-        <div>
-            <h1>{data.file.title}</h1>
-            <span>{typeLabel}</span>
-            <span>&nbsp;&nbsp;{"크기:" + data.file.size}</span>
-            <span>&nbsp;&nbsp;{"업로더:" + data.file.uploader}</span>
-            <span>&nbsp;&nbsp;{"다운로드 횟수:" + data.file.download_count + "회"}</span>
-            <span>&nbsp;&nbsp;{data.writer_is_me ?  <span></span>: <a onClick={() => deleteFile(id)}>삭제</a>}</span><br />
-            {content}<br />
-            <span>{data.file.description}</span>
-         
+        <div className='page'>
+            <div className='card'>
+                <h1 className='page-title'>{data.file.title}</h1>
+                <div className='view-meta'>
+                    <span>{typeLabel}</span>
+                    <span>{"크기: " + data.file.size}</span>
+                    <span>업로더: <a className='profile-link' href={`/profile/${encodeURIComponent(data.file.uploader)}`}>{data.file.uploader}</a></span>
+                    <span>{"다운로드 횟수: " + data.file.download_count + "회"}</span>
+                    {data.writer_is_me && (
+                        <span>
+                            <a className='file-edit' href={`/file_upload/edit/${download_type}/${type}/${id}`}>수정</a>
+                            &nbsp;&nbsp;
+                            <a className='file-del' onClick={() => deleteFile(id)}>삭제</a>
+                        </span>
+                    )}
+                </div>
+                {content}
+                <span className='view-desc'>{data.file.description}</span>
+            </div>
         </div>
     )
 }

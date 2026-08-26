@@ -8,6 +8,8 @@ import {
   gymResultsSchema,
   gymBidsSchema,
   gymChatsSchema,
+  chatroomSchema,
+  messageSchema,
 } from "src/db/schema";
 
 @Module({
@@ -23,6 +25,8 @@ import {
       { name: "gymResults", schema: gymResultsSchema },
       { name: "gymBids", schema: gymBidsSchema },
       { name: "gymChats", schema: gymChatsSchema },
+      { name: "chatrooms", schema: chatroomSchema },
+      { name: "messages", schema: messageSchema },
     ]),
   ],
     providers: [socketService],exports:[socketService]

@@ -43,16 +43,18 @@ function Singup() {
        
     }
     return (
-        <div className='Singup'>
-            <h1>회원가입</h1>
-           <br /><form onSubmit={singup}>
-                <input type="text" placeholder="이름" name="name" />
-                <input type="text" placeholder="아이디" name="id" />
-                <input type="email" placeholder="이메일" name="email" />
-                <input type="password" placeholder="비밀번호" name="password" />
-                <input type="password" placeholder="비밀번호 확인" name="password_check" />
-                <button type="submit">회원가입</button>
-            </form>
+        <div className='Singup auth-wrap'>
+            <div className='auth-card'>
+                <h1>회원가입</h1>
+                <form onSubmit={singup} className='form-stack'>
+                    <input className='field' type="text" placeholder="이름" name="name" />
+                    <input className='field' type="text" placeholder="아이디" name="id" />
+                    <input className='field' type="email" placeholder="이메일" name="email" />
+                    <input className='field' type="password" placeholder="비밀번호" name="password" />
+                    <input className='field' type="password" placeholder="비밀번호 확인" name="password_check" />
+                    <button className='btn btn-primary btn-block' type="submit">회원가입</button>
+                </form>
+            </div>
         </div>
     )
 }

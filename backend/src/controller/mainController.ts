@@ -1,5 +1,6 @@
-import { Controller,Get,Post,Req,Res,Body } from "@nestjs/common";
+import { Controller,Get,Post,Req,Res,Body,Param } from "@nestjs/common";
 import { authService } from "../service/auth";
+import { socketService } from "src/service/socket";
 import cookieParser from "cookie-parser";
 import { Request } from 'express';
 import { ObjectId } from "mongoose";
@@ -11,7 +12,16 @@ import { stringify } from "querystring";
 
 @Controller()
 export class mainController{
-constructor(private readonly authService:authService){}
+constructor(
+  private readonly authService:authService,
+  private readonly socketService:socketService,
+){}
+
+    @Get("/online_users")
+    async onlineUsers(){
+      const users = await this.socketService.getOnlineUsers();
+      return { users: users };
+    }
 
     @Get("home")
     async home(@Req() req: any){
@@ -21,11 +31,38 @@ constructor(private readonly authService:authService){}
       }
     
       const name = await this.authService.login_Load(req.cookies.user);
+      const role = await this.authService.role_Load(req.cookies.user);
       console.log('loaded name:', name);
-    
-      return { name: name };
+
+      return { name: name, role: role };
         
        
+    }
+
+    @Get("/mypage")
+    async mypage(@Req() req: any){
+      if (!req.cookies.user) {
+        return { user: null };
+      }
+
+      const user = await this.authService.mypage_Load(req.cookies.user);
+      return { user: user };
+    }
+
+    @Post("/mypage/bio")
+    async updateBio(@Req() req: any, @Body("bio") bio: string){
+      if (!req.cookies.user) {
+        return { success: false, message: '로그인이 필요합니다.' };
+      }
+
+      const user = await this.authService.updateBio(req.cookies.user, bio ?? '');
+      return { success: true, user: user };
+    }
+
+    @Get("/profile/:name")
+    async profile(@Param("name") name: string){
+      const user = await this.authService.profile_Load(name);
+      return { user: user };
     }
 
     @Get("/logout")

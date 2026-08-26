@@ -3,12 +3,15 @@
   import { DateUtils } from '../utils/dateUtils';
   import {Model, Types} from "mongoose";
   import { InjectModel } from "@nestjs/mongoose";
+  import { xpService } from "src/service/xpService";
 
   @Injectable()
   export class UploadService {
 
     private modelMap: Record<string, Model<any>>;
     constructor(
+     private readonly xpService: xpService,
+
      @InjectModel('users')
      private readonly userModel: Model<any>,
     
@@ -116,13 +119,16 @@ if(data.download_type==='gym'){
     description:data.description,
     seller_id:uploaderUser._id,
     seller_name:uploaderUser.name,
-    start_price:data.start_price,
+    start_price:data.start_price*100,
     end_time:end_time,
 
   });
 
 
 }
+
+    await this.xpService.addXp(userId, 3);
+
     return {
       success: true,
       message: '파일 업로드 완료',

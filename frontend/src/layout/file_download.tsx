@@ -20,15 +20,15 @@ function FileDownload() {
 
     console.log(data)
 
-var content =(<h1>다운로드</h1>);
+var content =(<h1 className='page-title'>다운로드</h1>);
 
 
 
     return (
-        <div>
-             {content}
-            
-         
+        <div className='page'>
+            <div className='card'>
+                {content}
+            </div>
         </div>
     )
 }
