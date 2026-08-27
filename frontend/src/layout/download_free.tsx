@@ -17,7 +17,7 @@ function FileListFree() {
 			setError(null)
 			try {
 				const res = await axios.post(
-					`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/download/free/${category}`,
+					import.meta.env.API_VALUE+`/download/free/${category}`,
 					{ keyword },
 					{ withCredentials: true },
 				)
@@ -47,7 +47,7 @@ function FileListFree() {
 	const deleteFile = async (id: string) => {
 		try {
 			await axios
-				.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/writer_delete/free/${category}/${id}`, {
+				.get(import.meta.env.API_VALUE+`/writer_delete/free/${category}/${id}`, {
 					withCredentials: true,
 				})
 				.then((res) => {

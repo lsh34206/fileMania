@@ -23,7 +23,7 @@ function FilePurchase() {
       setLoading(true)
       try {
         const [viewRes, meRes] = await Promise.all([
-          axios.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/download/paid/${type}/${id}`, { withCredentials: true }),
+          axios.get(import.meta.env.API_VALUE+`/download/paid/${type}/${id}`, { withCredentials: true }),
           axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/mypage', { withCredentials: true }),
         ])
         if (cancelled) return
@@ -44,7 +44,7 @@ function FilePurchase() {
   const buy = async () => {
     setSubmitting(true)
     try {
-      const res = await axios.post(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/purchase/${type}/${id}`, {}, { withCredentials: true })
+      const res = await axios.post(import.meta.env.API_VALUE+`/purchase/${type}/${id}`, {}, { withCredentials: true })
       if (res.data.success) {
         alert(res.data.message)
         location.href = `/download/paid/${type}/${id}`
@@ -111,7 +111,7 @@ function FilePurchase() {
         {(type === 'image' || type === 'video') && (
           <div className='purchase-preview'>
             <img
-              src={`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/media/${type}/${id}/preview`}
+              src={import.meta.env.BACKEND_URI_VALUE+`/media/${type}/${id}/preview`}
               alt={data.file.title}
               className='file_view_image purchase-blur'
             />

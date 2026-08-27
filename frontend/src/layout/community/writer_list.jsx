@@ -19,7 +19,7 @@ function WriterList() {
             setError(null)
             try {
                 const res = await axios.post(
-                    `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/${category}`,
+                   import.meta.env.API_VALUE+`/community/${category}`,
                     { keyword, sort },
                     { withCredentials: true },
                 )

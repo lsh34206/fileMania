@@ -14,7 +14,7 @@ function PointCharge() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/mypage', { withCredentials: true })
+        axios.get(import.meta.env.API_VALUE+'/mypage', { withCredentials: true })
             .then((res) => {
                 if (!cancelled) setUser(res.data.user ?? null)
             })
@@ -42,7 +42,7 @@ function PointCharge() {
         setSubmitting(true)
         try {
             const res = await axios.post(
-                'http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/payment/point/order',
+               import.meta.env.API_VALUE+'/payment/point/order',
                 { amount: value },
                 { withCredentials: true },
             )

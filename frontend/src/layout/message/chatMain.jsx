@@ -48,7 +48,7 @@ function ChatMain() {
             setLoading(true)
             setError(null)
             try {
-                const res = await axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/chat', { withCredentials: true })
+                const res = await axios.get(import.meta.env.API_VALUE+'/chat', { withCredentials: true })
                 if (cancelled) return
 
                 setName(res.data.name ?? null)

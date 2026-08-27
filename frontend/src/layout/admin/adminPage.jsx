@@ -24,7 +24,7 @@ function AdminPage() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/mypage', { withCredentials: true })
+        axios.get(import.meta.env.API_VALUE+'/mypage', { withCredentials: true })
             .then((res) => {
                 if (cancelled) return
                 setIsAdmin(res.data.user?.role === 'admin')
@@ -42,7 +42,7 @@ function AdminPage() {
         setLoading(true)
         setError(null)
         try {
-            const res = await axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/admin/users', { withCredentials: true })
+            const res = await axios.get(import.meta.env.API_VALUE+'/admin/users', { withCredentials: true })
             if (res.data.success) {
                 setUsers(res.data.users ?? [])
             } else {
@@ -72,7 +72,7 @@ function AdminPage() {
 
         try {
             const res = await axios.post(
-                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/admin/users/${user._id}/suspend`,
+                import.meta.env.API_VALUE+`admin/users/${user._id}/suspend`,
                 { days, reason },
                 { withCredentials: true },
             )
@@ -90,7 +90,7 @@ function AdminPage() {
 
         try {
             const res = await axios.post(
-                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/admin/users/${user._id}/ban`,
+                import.meta.env.API_VALUE+`/admin/users/${user._id}/ban`,
                 { reason },
                 { withCredentials: true },
             )
@@ -107,7 +107,7 @@ function AdminPage() {
 
         try {
             const res = await axios.post(
-                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/admin/users/${user._id}/restore`,
+               import.meta.env.API_VALUE+`/admin/users/${user._id}/restore`,
                 {},
                 { withCredentials: true },
             )

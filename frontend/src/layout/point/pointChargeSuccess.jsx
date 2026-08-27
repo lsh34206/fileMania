@@ -20,7 +20,7 @@ function PointChargeSuccess() {
         }
 
         axios.post(
-            'http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/payment/point/confirm',
+           import.meta.env.API_VALUE+'/payment/point/confirm',
             { paymentKey, orderId, amount: Number(amount) },
             { withCredentials: true },
         ).then((res) => {

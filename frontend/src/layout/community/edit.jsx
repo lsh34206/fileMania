@@ -17,7 +17,7 @@ function Edit() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/${category}/${id}`, { withCredentials: true })
+        axios.get(import.meta.env.API_VALUE+`/community/${category}/${id}`, { withCredentials: true })
             .then((res) => {
                 if (cancelled) return
                 const post = res.data.post
@@ -53,7 +53,7 @@ function Edit() {
             }
 
             const res = await axios.post(
-                `http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/community/edit_ok/${category}/${id}`,
+               import.meta.env.API_VALUE+`/community/edit_ok/${category}/${id}`,
                 { data: JSON.stringify(formData) },
                 { withCredentials: true },
             )

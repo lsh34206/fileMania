@@ -8,7 +8,7 @@ function Login() {
         e.preventDefault();
         const id = e.target.id.value;
         const password = e.target.password.value;
-        fetch(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/login_ok`, {
+        fetch(import.meta.env.API_VALUE+`/login_ok`, {
             method: 'POST',
             body: JSON.stringify({id: id, password: password}),
             credentials: 'include',
