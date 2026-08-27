@@ -13,7 +13,7 @@ function FileDownload() {
     const id = pathParts[pathParts.length - 1];
     console.log(type,id)
    useEffect(() => {
-    axios.get(`http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/download/file/${type}/${id}`, {
+    axios.get(`${import.meta.env.VITE_API_VALUE}/download/file/${type}/${id}`, {
       withCredentials: true
     }).then(res => setData(res.data))
 }, [type, id])

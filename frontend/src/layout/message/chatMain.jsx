@@ -48,7 +48,7 @@ function ChatMain() {
             setLoading(true)
             setError(null)
             try {
-                const res = await axios.get(import.meta.env.API_VALUE+'/chat', { withCredentials: true })
+                const res = await axios.get(import.meta.env.VITE_API_VALUE+'/chat', { withCredentials: true })
                 if (cancelled) return
 
                 setName(res.data.name ?? null)

@@ -19,7 +19,7 @@ function WriterList() {
             setError(null)
             try {
                 const res = await axios.post(
-                   import.meta.env.API_VALUE+`/community/${category}`,
+                   import.meta.env.VITE_API_VALUE+`/community/${category}`,
                     { keyword, sort },
                     { withCredentials: true },
                 )

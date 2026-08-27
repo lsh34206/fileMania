@@ -28,7 +28,7 @@ function MyPage() {
             setLoading(true)
             setError(null)
             try {
-                const res = await axios.get(import.meta.env.API_VALUE+'/mypage', { withCredentials: true })
+                const res = await axios.get(import.meta.env.VITE_API_VALUE+'/mypage', { withCredentials: true })
                 if (!cancelled) {
                     setUser(res.data.user ?? null)
                     setBio(res.data.user?.bio ?? '')
@@ -83,7 +83,7 @@ function MyPage() {
     const saveBio = async () => {
         setSavingBio(true)
         try {
-            const res = await axios.post(import.meta.env.API_VALUE+'/mypage/bio', { bio }, { withCredentials: true })
+            const res = await axios.post(import.meta.env.VITE_API_VALUE+'/mypage/bio', { bio }, { withCredentials: true })
             if (res.data.success) {
                 setUser({ ...user, bio: res.data.user?.bio ?? bio })
                 setEditingBio(false)

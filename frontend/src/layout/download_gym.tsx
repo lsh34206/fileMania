@@ -28,7 +28,7 @@ function FileListGym() {
 			setLoading(true)
 			setError(null)
 			try{
-				const res = await axios.post(import.meta.env.API_VALUE+`/download/gym/${category}`, { keyword }, { withCredentials: true })
+				const res = await axios.post(import.meta.env.VITE_API_VALUE+`/download/gym/${category}`, { keyword }, { withCredentials: true })
 				if(!cancelled){
 				  setData(res.data ?? { files: [], id: [] ,name:"",end_time:0,start_price:0
 				  })
@@ -52,7 +52,7 @@ function FileListGym() {
 	}
 	const deleteFile = async (id:string) => {
 		try{
-			const res = await axios.get(import.meta.env.API_VALUE+`/writer_delete/gym/${category}/${id}`, { withCredentials: true }).then(res => {
+			const res = await axios.get(import.meta.env.VITE_API_VALUE+`/writer_delete/gym/${category}/${id}`, { withCredentials: true }).then(res => {
 				if(res.data.success){
 					alert('파일 삭제 완료')
 				location.href = '/download/gym';

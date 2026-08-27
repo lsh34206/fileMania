@@ -9,6 +9,7 @@ import session from 'express-session';
 async function bootstrap() {
 
     const app = await NestFactory.create(mainModule);
+    
 app.use(cookieParser());
 
     app.enableCors({
@@ -30,7 +31,7 @@ app.use(cookieParser());
 
 
 
-
+app.setGlobalPrefix('api');
 
 
     await app.listen(8080,()=>{console.log("서버시작");});

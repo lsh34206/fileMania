@@ -62,7 +62,7 @@ function Message() {
             setLoading(true)
             setError(null)
             try {
-                const res = await axios.get(import.meta.env.API_VALUE+'/message', { withCredentials: true })
+                const res = await axios.get(import.meta.env.VITE_API_VALUE+'/message', { withCredentials: true })
                 if (!cancelled) {
                     setName(res.data.name ?? null)
                     setMailList(res.data.mailList ?? [])
@@ -88,7 +88,7 @@ function Message() {
     const deleteMail = async (mailId) => {
         if (!window.confirm('이 우편을 삭제하시겠습니까?')) return
         try {
-            const res = await axios.delete(import.meta.env.API_VALUE+`/message/${mailId}`, { withCredentials: true })
+            const res = await axios.delete(import.meta.env.VITE_API_VALUE+`/message/${mailId}`, { withCredentials: true })
             if (!res.data.success) {
                 alert(res.data.message)
                 return

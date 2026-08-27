@@ -16,7 +16,7 @@ function Singup() {
             return;
         }else{
             try{
-                 const res = await fetch(import.meta.env.API_VALUE+`/singup_ok`, {
+                 const res = await fetch(import.meta.env.VITE_API_VALUE+`/singup_ok`, {
             method: 'POST',
             body: JSON.stringify({name: name, id: id, email: email, password: password,password_check:password_check}),
             headers: {

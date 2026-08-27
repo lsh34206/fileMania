@@ -40,7 +40,7 @@ function ChatRoom() {
     // 로그인 정보(userId) 로드
     useEffect(() => {
         let cancelled = false
-        axios.get(import.meta.env.API_VALUE+'/chat', { withCredentials: true })
+        axios.get(import.meta.env.VITE_API_VALUE+'/chat', { withCredentials: true })
             .then((res) => {
                 if (cancelled) return
                 setName(res.data.name ?? null)

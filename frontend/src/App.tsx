@@ -38,14 +38,14 @@ function Header() {
   const [role, setRole] = useState(null);
 
   useEffect( () => {
-    axios.get(import.meta.env.API_VALUE+'/home',{withCredentials: true}).then(res => {
+    axios.get(import.meta.env.VITE_API_VALUE+'/home',{withCredentials: true}).then(res => {
       setName(res.data.name)
       setRole(res.data.role ?? null)
     });
   },[]);
  const logout = async (e:any) => {
   try{
-      await axios.get(import.meta.env.API_VALUE+'/logout',{withCredentials: true})
+      await axios.get(import.meta.env.VITE_API_VALUE+'/logout',{withCredentials: true})
       alert("로그아웃됨");
       window.location.href = '/home';
     }catch(error){

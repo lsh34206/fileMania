@@ -8,7 +8,7 @@ function Login() {
         e.preventDefault();
         const id = e.target.id.value;
         const password = e.target.password.value;
-        fetch(import.meta.env.API_VALUE+`/login_ok`, {
+        fetch(import.meta.env.VITE_API_VALUE+`/login_ok`, {
             method: 'POST',
             body: JSON.stringify({id: id, password: password}),
             credentials: 'include',

@@ -20,7 +20,7 @@ function PointChargeSuccess() {
         }
 
         axios.post(
-           import.meta.env.API_VALUE+'/payment/point/confirm',
+           import.meta.env.VITE_API_VALUE+'/payment/point/confirm',
             { paymentKey, orderId, amount: Number(amount) },
             { withCredentials: true },
         ).then((res) => {

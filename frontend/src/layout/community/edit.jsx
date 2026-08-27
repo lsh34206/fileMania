@@ -17,7 +17,7 @@ function Edit() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get(import.meta.env.API_VALUE+`/community/${category}/${id}`, { withCredentials: true })
+        axios.get(import.meta.env.VITE_API_VALUE+`/community/${category}/${id}`, { withCredentials: true })
             .then((res) => {
                 if (cancelled) return
                 const post = res.data.post
@@ -53,7 +53,7 @@ function Edit() {
             }
 
             const res = await axios.post(
-               import.meta.env.API_VALUE+`/community/edit_ok/${category}/${id}`,
+               import.meta.env.VITE_API_VALUE+`/community/edit_ok/${category}/${id}`,
                 { data: JSON.stringify(formData) },
                 { withCredentials: true },
             )

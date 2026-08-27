@@ -29,7 +29,7 @@ console.log(formData);
 
 
 
-        const res = await axios.post(import.meta.env.API_VALUE+'/file_upload_ok/'+formData.type, sendFormData,
+        const res = await axios.post(import.meta.env.VITE_API_VALUE+'/file_upload_ok/'+formData.type, sendFormData,
             {
               withCredentials: true
             });

@@ -15,7 +15,7 @@ function Write() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get(import.meta.env.API_VALUE+'/mypage', { withCredentials: true })
+        axios.get(import.meta.env.VITE_API_VALUE+'/mypage', { withCredentials: true })
             .then((res) => {
                 if (!cancelled) setIsAdmin(res.data.user?.role === 'admin')
             })
@@ -39,7 +39,7 @@ function Write() {
                 return
             }
 
-            const res = await axios.post(import.meta.env.API_VALUE+`/community/write_ok/${formData.category}`, {data:JSON.stringify(formData)},
+            const res = await axios.post(import.meta.env.VITE_API_VALUE+`/community/write_ok/${formData.category}`, {data:JSON.stringify(formData)},
                 {
                     withCredentials: true
                 })

@@ -10,7 +10,7 @@ function Home() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get(import.meta.env.API_VALUE+'/community_featured', { withCredentials: true })
+        axios.get(import.meta.env.VITE_API_VALUE+'/community_featured', { withCredentials: true })
             .then((res) => {
                 if (cancelled) return
                 setPost(res.data.post ?? null)
@@ -28,7 +28,7 @@ function Home() {
     useEffect(() => {
         let cancelled = false
         const fetchOnline = () => {
-            axios.get(import.meta.env.API_VALUE+'/online_users', { withCredentials: true })
+            axios.get(import.meta.env.VITE_API_VALUE+'/online_users', { withCredentials: true })
                 .then((res) => {
                     if (!cancelled) setOnlineUsers(res.data.users ?? [])
                 })

@@ -15,7 +15,7 @@ function FileEdit() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get(import.meta.env.API_VALUE+`/download/${download_type}/${type}/${id}`, { withCredentials: true })
+        axios.get(import.meta.env.VITE_API_VALUE+`/download/${download_type}/${type}/${id}`, { withCredentials: true })
             .then((res) => {
                 if (cancelled) return
                 const file = res.data.file
@@ -52,7 +52,7 @@ function FileEdit() {
             }
 
             const res = await axios.post(
-                import.meta.env.API_VALUE+`/file_edit_ok/${type}/${id}`,
+                import.meta.env.VITE_API_VALUE+`/file_edit_ok/${type}/${id}`,
                 { data: JSON.stringify(formData) },
                 { withCredentials: true },
             )

@@ -59,7 +59,7 @@ function FileViewGym() {
 
   useEffect(() => {
     axios
-      .get(import.meta.env.API_VALUE+`/download/gym/${type}/${id}`, {
+      .get(import.meta.env.VITE_API_VALUE+`/download/gym/${type}/${id}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -175,7 +175,7 @@ function FileViewGym() {
 
   const deleteFile = async () => {
     try {
-      const res = await axios.get(import.meta.env.API_VALUE+`/writer_delete/gym/${type}/${id}`, {
+      const res = await axios.get(import.meta.env.VITE_API_VALUE+`/writer_delete/gym/${type}/${id}`, {
         withCredentials: true,
       })
 

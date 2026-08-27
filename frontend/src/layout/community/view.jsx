@@ -29,7 +29,7 @@ function View() {
         setError(null)
         try {
             const res = await axios.get(
-               import.meta.env.API_VALUE+`/community/${category}/${id}`,
+               import.meta.env.VITE_API_VALUE+`/community/${category}/${id}`,
                 { withCredentials: true },
             ).then(res => {
                 console.log(res.data)
@@ -61,7 +61,7 @@ function View() {
     const likePost = async () => {
         try {
             const res = await axios.post(
-               import.meta.env.API_VALUE+`/community/like/${id}`,
+               import.meta.env.VITE_API_VALUE+`/community/like/${id}`,
                 {},
                 { withCredentials: true },
             )
@@ -85,7 +85,7 @@ function View() {
         }
         try {
             const res = await axios.post(
-                import.meta.env.API_VALUE+`/community/comment/${id}`,
+                import.meta.env.VITE_API_VALUE+`/community/comment/${id}`,
                 { content:content, parent_id: parentId ?? null ,writer:myId ?? null},
                 { withCredentials: true },
             )
@@ -104,7 +104,7 @@ function View() {
     const deleteComment = async (commentId) => {
         try{
             const res = await axios.post(
-                import.meta.env.API_VALUE+`/community/comment_delete/${id}/${category}/${commentId}`,
+                import.meta.env.VITE_API_VALUE+`/community/comment_delete/${id}/${category}/${commentId}`,
                 { },
                 { withCredentials: true },
             )
@@ -123,7 +123,7 @@ function View() {
     const deletePost = async (postId) => {
         try{
             const res = await axios.post(
-             import.meta.env.API_VALUE+`/community/post_delete/${postId}/${category}`,
+             import.meta.env.VITE_API_VALUE+`/community/post_delete/${postId}/${category}`,
                 { },
                 { withCredentials: true },
             )
@@ -142,7 +142,7 @@ function View() {
     const likeComment = async (commentId) => {
         try {
             const res = await axios.post(
-                import.meta.env.API_VALUE+`/community/comment_like/${id}/${commentId}`,
+                import.meta.env.VITE_API_VALUE+`/community/comment_like/${id}/${commentId}`,
                 { },
                 { withCredentials: true },
             )

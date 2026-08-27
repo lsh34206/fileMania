@@ -3,7 +3,7 @@ import axios from 'axios'
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk'
 import '../../App.css'
 
-const clientKey = import.meta.env.VITE_TOSS_CLIENT_KEY
+const clientKey = import.meta.env.VITE_VITE_TOSS_CLIENT_KEY
 const PRESET_AMOUNTS = [10000, 30000, 50000, 100000]
 
 function PointCharge() {
@@ -14,7 +14,7 @@ function PointCharge() {
 
     useEffect(() => {
         let cancelled = false
-        axios.get(import.meta.env.API_VALUE+'/mypage', { withCredentials: true })
+        axios.get(import.meta.env.VITE_API_VALUE+'/mypage', { withCredentials: true })
             .then((res) => {
                 if (!cancelled) setUser(res.data.user ?? null)
             })
@@ -42,7 +42,7 @@ function PointCharge() {
         setSubmitting(true)
         try {
             const res = await axios.post(
-               import.meta.env.API_VALUE+'/payment/point/order',
+               import.meta.env.VITE_API_VALUE+'/payment/point/order',
                 { amount: value },
                 { withCredentials: true },
             )

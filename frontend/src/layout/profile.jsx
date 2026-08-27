@@ -13,7 +13,7 @@ function Profile() {
     useEffect(() => {
         let cancelled = false
         setLoading(true)
-        axios.get(import.meta.env.API_VALUE+`/profile/${encodeURIComponent(name)}`, { withCredentials: true })
+        axios.get(import.meta.env.VITE_API_VALUE+`/profile/${encodeURIComponent(name)}`, { withCredentials: true })
             .then((res) => {
                 if (!cancelled) setUser(res.data.user ?? null)
             })

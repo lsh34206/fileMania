@@ -17,7 +17,7 @@ function FileListFree() {
 			setError(null)
 			try {
 				const res = await axios.post(
-					import.meta.env.API_VALUE+`/download/free/${category}`,
+					import.meta.env.VITE_API_VALUE+`/download/free/${category}`,
 					{ keyword },
 					{ withCredentials: true },
 				)
@@ -47,7 +47,7 @@ function FileListFree() {
 	const deleteFile = async (id: string) => {
 		try {
 			await axios
-				.get(import.meta.env.API_VALUE+`/writer_delete/free/${category}/${id}`, {
+				.get(import.meta.env.VITE_API_VALUE+`/writer_delete/free/${category}/${id}`, {
 					withCredentials: true,
 				})
 				.then((res) => {

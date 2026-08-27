@@ -23,6 +23,7 @@ async function bootstrap() {
             httpOnly: true,
         },
     }));
+    app.setGlobalPrefix('api');
     await app.listen(8080, () => { console.log("서버시작"); });
 }
 bootstrap();
