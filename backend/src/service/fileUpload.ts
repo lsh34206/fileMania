@@ -119,7 +119,7 @@ if(data.download_type==='gym'){
     description:data.description,
     seller_id:uploaderUser._id,
     seller_name:uploaderUser.name,
-    start_price:data.start_price*100,
+    start_price:data.start_price,
     end_time:end_time,
 
   });

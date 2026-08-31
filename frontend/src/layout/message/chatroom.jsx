@@ -3,7 +3,7 @@ import axios from 'axios'
 import { io } from 'socket.io-client'
 import '../../App.css'
 
-const socket = io({
+const socket = io(import.meta.env.VITE_SOCKETIO_URI_VALUE,{
     withCredentials: true,
 })
 

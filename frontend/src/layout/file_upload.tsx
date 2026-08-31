@@ -69,7 +69,7 @@ console.log(formData);
                     {formData.download_type === 'paid' && <input className='field' type="number" name="price" placeholder="가격" onChange={(e:any) => setFormData({...formData, price: e.target.value})} />}
                     <input className='field' type="text" name="title" size={30} placeholder="제목" onChange={(e) => setFormData({...formData, title: e.target.value})} />
                     <textarea className='field' name="description" rows={5} cols={30} placeholder="설명" onChange={(e) => setFormData({...formData, description: e.target.value})} />
-                    {formData.download_type === 'gym' && <input className='field' type="number" name="start_price" placeholder="입찰가(100원 단위)" onChange={(e:any) => setFormData({...formData, start_price: e.target.value})} />}
+                    {formData.download_type === 'gym' && <input className='field' type="number" name="start_price" placeholder="입찰 시작가(원)" onChange={(e:any) => setFormData({...formData, start_price: e.target.value})} />}
                     {formData.download_type === 'gym' && <input className='field' type="number" name="end_time" placeholder="마감시간(분)" onChange={(e:any) => setFormData({...formData, end_time: e.target.value})} />}
                     <button className='btn btn-primary btn-block' type="submit">Upload</button>
                 </form>

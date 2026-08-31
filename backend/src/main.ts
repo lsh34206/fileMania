@@ -13,7 +13,7 @@ async function bootstrap() {
 app.use(cookieParser());
 
     app.enableCors({
-        origin: true,
+        origin: process.env.FRONTEND_URI_VALUE,
         credentials:true
       });
       
@@ -31,7 +31,7 @@ app.use(cookieParser());
 
 
 
-app.setGlobalPrefix('api');
+//app.setGlobalPrefix('api');
 
 
     await app.listen(8080,()=>{console.log("서버시작");});

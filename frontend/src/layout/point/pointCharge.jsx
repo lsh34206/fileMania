@@ -3,7 +3,7 @@ import axios from 'axios'
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk'
 import '../../App.css'
 
-const clientKey = import.meta.env.VITE_VITE_TOSS_CLIENT_KEY
+const clientKey = import.meta.env.VITE_TOSS_CLIENT_KEY
 const PRESET_AMOUNTS = [10000, 30000, 50000, 100000]
 
 function PointCharge() {

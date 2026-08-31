@@ -98,7 +98,7 @@ export const gymsSchema = new Schema({
   
     start_price: { type: Number, required: true },
     current_price: { type: Number, default: 0 },
-    min_bid_unit: { type: Number, default: 100 },
+    min_bid_unit: { type: Number, default: 1 },
   
     highest_bidder_id: { type: Schema.Types.ObjectId, default: null },
     highest_bidder_name: { type: String, default: '' },

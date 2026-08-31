@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client'
 import '../App.css'
 import { DateUtils } from '../../../backend/src/utils/dateUtils'
 const ngrok = "https://2359-124-194-149-252.ngrok-free.app";
-const socket: Socket = io( {
+const socket: Socket = io( import.meta.env.VITE_SOCKETIO_URI_VALUE,{
   withCredentials: true
 })
 
@@ -229,7 +229,7 @@ function FileViewGym() {
           <div style={styles.pricePanel}>
             <div style={styles.priceBlock}>
               <span style={styles.priceLabel}>현재가</span>
-              <span style={styles.priceValue}>{currentPrice*100}원</span>
+              <span style={styles.priceValue}>{currentPrice}원</span>
             </div>
             <div style={styles.timeBlock}>
               <span style={styles.priceLabel}>종료까지</span>
@@ -266,7 +266,7 @@ function FileViewGym() {
           </div>
 
           <p style={styles.notice}>
-            제시단위: 100원 / 입찰 취소 불가 / 마감시간 전까지 입찰 가능 / 마감 후 낙찰자 결제
+            제시단위: 1원 / 입찰 취소 불가 / 마감시간 전까지 입찰 가능 / 마감 후 낙찰자 결제
           </p>
         </section>
 

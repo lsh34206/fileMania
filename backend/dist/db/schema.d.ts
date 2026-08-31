@@ -2,61 +2,61 @@ import { Schema } from 'mongoose';
 export declare const usersSchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
     id: string;
     name: string;
-    role: string;
-    bio: string;
     email: string;
     password: string;
-    status: "banned" | "suspended" | "active";
-    suspend_reason: string;
-    xp: number;
-    level: number;
-    createdAt: NativeDate;
-    writer_count: number;
     phone: string;
+    bio: string;
+    createdAt: NativeDate;
     isActive: number;
+    role: string;
+    status: "active" | "suspended" | "banned";
+    suspend_reason: string;
     ban_reason: string;
     point: number;
+    xp: number;
+    level: number;
     massege_list: any[];
+    writer_count: number;
     liked_file_list: any[];
     suspended_until?: NativeDate | null | undefined;
 }, import("mongoose").Document<unknown, {}, {
     id: string;
     name: string;
-    role: string;
-    bio: string;
     email: string;
     password: string;
-    status: "banned" | "suspended" | "active";
-    suspend_reason: string;
-    xp: number;
-    level: number;
-    createdAt: NativeDate;
-    writer_count: number;
     phone: string;
+    bio: string;
+    createdAt: NativeDate;
     isActive: number;
+    role: string;
+    status: "active" | "suspended" | "banned";
+    suspend_reason: string;
     ban_reason: string;
     point: number;
+    xp: number;
+    level: number;
     massege_list: any[];
+    writer_count: number;
     liked_file_list: any[];
     suspended_until?: NativeDate | null | undefined;
 }, {}, import("mongoose").DefaultSchemaOptions> & {
     id: string;
     name: string;
-    role: string;
-    bio: string;
     email: string;
     password: string;
-    status: "banned" | "suspended" | "active";
-    suspend_reason: string;
-    xp: number;
-    level: number;
-    createdAt: NativeDate;
-    writer_count: number;
     phone: string;
+    bio: string;
+    createdAt: NativeDate;
     isActive: number;
+    role: string;
+    status: "active" | "suspended" | "banned";
+    suspend_reason: string;
     ban_reason: string;
     point: number;
+    xp: number;
+    level: number;
     massege_list: any[];
+    writer_count: number;
     liked_file_list: any[];
     suspended_until?: NativeDate | null | undefined;
 } & {
@@ -66,21 +66,21 @@ export declare const usersSchema: Schema<any, import("mongoose").Model<any, any,
 }, unknown, {
     id: string;
     name: string;
-    role: string;
-    bio: string;
     email: string;
     password: string;
-    status: "banned" | "suspended" | "active";
-    suspend_reason: string;
-    xp: number;
-    level: number;
-    createdAt: NativeDate;
-    writer_count: number;
     phone: string;
+    bio: string;
+    createdAt: NativeDate;
     isActive: number;
+    role: string;
+    status: "active" | "suspended" | "banned";
+    suspend_reason: string;
     ban_reason: string;
     point: number;
+    xp: number;
+    level: number;
     massege_list: any[];
+    writer_count: number;
     liked_file_list: any[];
     suspended_until?: NativeDate | null | undefined;
 } & {
@@ -89,25 +89,25 @@ export declare const usersSchema: Schema<any, import("mongoose").Model<any, any,
     __v: number;
 }>;
 export declare const purchaseSchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
-    price: number;
-    file_id: import("mongoose").Types.ObjectId;
-    file_type: string;
     createdAt: NativeDate;
     user_id: import("mongoose").Types.ObjectId;
+    file_id: import("mongoose").Types.ObjectId;
+    file_type: string;
+    price: number;
 }, import("mongoose").Document<unknown, {}, {
-    price: number;
-    file_id: import("mongoose").Types.ObjectId;
-    file_type: string;
     createdAt: NativeDate;
     user_id: import("mongoose").Types.ObjectId;
+    file_id: import("mongoose").Types.ObjectId;
+    file_type: string;
+    price: number;
 }, {
     id: string;
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
-    price: number;
-    file_id: import("mongoose").Types.ObjectId;
-    file_type: string;
     createdAt: NativeDate;
     user_id: import("mongoose").Types.ObjectId;
+    file_id: import("mongoose").Types.ObjectId;
+    file_type: string;
+    price: number;
 } & {
     _id: import("mongoose").Types.ObjectId;
 } & {
@@ -115,19 +115,19 @@ export declare const purchaseSchema: Schema<any, import("mongoose").Model<any, a
 }, "id"> & {
     id: string;
 }, unknown, {
-    price: number;
-    file_id: import("mongoose").Types.ObjectId;
-    file_type: string;
     createdAt: NativeDate;
     user_id: import("mongoose").Types.ObjectId;
+    file_id: import("mongoose").Types.ObjectId;
+    file_type: string;
+    price: number;
 } & {
     _id: import("mongoose").Types.ObjectId;
 } & {
     __v: number;
 }>;
 export declare const pointChargeSchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
-    status: "paid" | "ready" | "failed";
     createdAt: NativeDate;
+    status: "ready" | "paid" | "failed";
     user_id: import("mongoose").Types.ObjectId;
     order_id: string;
     amount: number;
@@ -135,8 +135,8 @@ export declare const pointChargeSchema: Schema<any, import("mongoose").Model<any
     method: string;
     approved_at?: NativeDate | null | undefined;
 }, import("mongoose").Document<unknown, {}, {
-    status: "paid" | "ready" | "failed";
     createdAt: NativeDate;
+    status: "ready" | "paid" | "failed";
     user_id: import("mongoose").Types.ObjectId;
     order_id: string;
     amount: number;
@@ -146,8 +146,8 @@ export declare const pointChargeSchema: Schema<any, import("mongoose").Model<any
 }, {
     id: string;
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
-    status: "paid" | "ready" | "failed";
     createdAt: NativeDate;
+    status: "ready" | "paid" | "failed";
     user_id: import("mongoose").Types.ObjectId;
     order_id: string;
     amount: number;
@@ -161,8 +161,8 @@ export declare const pointChargeSchema: Schema<any, import("mongoose").Model<any
 }, "id"> & {
     id: string;
 }, unknown, {
-    status: "paid" | "ready" | "failed";
     createdAt: NativeDate;
+    status: "ready" | "paid" | "failed";
     user_id: import("mongoose").Types.ObjectId;
     order_id: string;
     amount: number;
@@ -178,25 +178,25 @@ export declare const chatroomSchema: Schema<any, import("mongoose").Model<any, a
     type: string;
     createdAt: NativeDate;
     auction_id: import("mongoose").Types.ObjectId;
+    participants: import("mongoose").Types.ObjectId[];
     last_message: string;
     last_message_time: NativeDate;
-    participants: import("mongoose").Types.ObjectId[];
 }, import("mongoose").Document<unknown, {}, {
     type: string;
     createdAt: NativeDate;
     auction_id: import("mongoose").Types.ObjectId;
+    participants: import("mongoose").Types.ObjectId[];
     last_message: string;
     last_message_time: NativeDate;
-    participants: import("mongoose").Types.ObjectId[];
 }, {
     id: string;
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
     type: string;
     createdAt: NativeDate;
     auction_id: import("mongoose").Types.ObjectId;
+    participants: import("mongoose").Types.ObjectId[];
     last_message: string;
     last_message_time: NativeDate;
-    participants: import("mongoose").Types.ObjectId[];
 } & {
     _id: import("mongoose").Types.ObjectId;
 } & {
@@ -207,33 +207,33 @@ export declare const chatroomSchema: Schema<any, import("mongoose").Model<any, a
     type: string;
     createdAt: NativeDate;
     auction_id: import("mongoose").Types.ObjectId;
+    participants: import("mongoose").Types.ObjectId[];
     last_message: string;
     last_message_time: NativeDate;
-    participants: import("mongoose").Types.ObjectId[];
 } & {
     _id: import("mongoose").Types.ObjectId;
 } & {
     __v: number;
 }>;
 export declare const messageSchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
-    content: string;
     createdAt: NativeDate;
-    sender_id: import("mongoose").Types.ObjectId;
     room_id: import("mongoose").Types.ObjectId;
+    sender_id: import("mongoose").Types.ObjectId;
+    content: string;
     isRead: boolean;
 }, import("mongoose").Document<unknown, {}, {
-    content: string;
     createdAt: NativeDate;
-    sender_id: import("mongoose").Types.ObjectId;
     room_id: import("mongoose").Types.ObjectId;
+    sender_id: import("mongoose").Types.ObjectId;
+    content: string;
     isRead: boolean;
 }, {
     id: string;
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
-    content: string;
     createdAt: NativeDate;
-    sender_id: import("mongoose").Types.ObjectId;
     room_id: import("mongoose").Types.ObjectId;
+    sender_id: import("mongoose").Types.ObjectId;
+    content: string;
     isRead: boolean;
 } & {
     _id: import("mongoose").Types.ObjectId;
@@ -242,10 +242,10 @@ export declare const messageSchema: Schema<any, import("mongoose").Model<any, an
 }, "id"> & {
     id: string;
 }, unknown, {
-    content: string;
     createdAt: NativeDate;
-    sender_id: import("mongoose").Types.ObjectId;
     room_id: import("mongoose").Types.ObjectId;
+    sender_id: import("mongoose").Types.ObjectId;
+    content: string;
     isRead: boolean;
 } & {
     _id: import("mongoose").Types.ObjectId;
@@ -254,44 +254,44 @@ export declare const messageSchema: Schema<any, import("mongoose").Model<any, an
 }>;
 export declare const filesSchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
     type: string;
-    download_type: string;
-    download_count: number;
-    path: string;
-    title: string;
-    description: string;
+    createdAt: NativeDate;
     price: number;
     size: string;
+    description: string;
+    title: string;
     uploader: string;
+    path: string;
+    download_type: string;
+    download_count: number;
     start_price: number;
-    createdAt: NativeDate;
     end_time?: NativeDate | null | undefined;
 }, import("mongoose").Document<unknown, {}, {
     type: string;
-    download_type: string;
-    download_count: number;
-    path: string;
-    title: string;
-    description: string;
+    createdAt: NativeDate;
     price: number;
     size: string;
+    description: string;
+    title: string;
     uploader: string;
+    path: string;
+    download_type: string;
+    download_count: number;
     start_price: number;
-    createdAt: NativeDate;
     end_time?: NativeDate | null | undefined;
 }, {
     id: string;
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
     type: string;
-    download_type: string;
-    download_count: number;
-    path: string;
-    title: string;
-    description: string;
+    createdAt: NativeDate;
     price: number;
     size: string;
+    description: string;
+    title: string;
     uploader: string;
+    path: string;
+    download_type: string;
+    download_count: number;
     start_price: number;
-    createdAt: NativeDate;
     end_time?: NativeDate | null | undefined;
 } & {
     _id: import("mongoose").Types.ObjectId;
@@ -301,16 +301,16 @@ export declare const filesSchema: Schema<any, import("mongoose").Model<any, any,
     id: string;
 }, unknown, {
     type: string;
-    download_type: string;
-    download_count: number;
-    path: string;
-    title: string;
-    description: string;
+    createdAt: NativeDate;
     price: number;
     size: string;
+    description: string;
+    title: string;
     uploader: string;
+    path: string;
+    download_type: string;
+    download_count: number;
     start_price: number;
-    createdAt: NativeDate;
     end_time?: NativeDate | null | undefined;
 } & {
     _id: import("mongoose").Types.ObjectId;
@@ -318,60 +318,60 @@ export declare const filesSchema: Schema<any, import("mongoose").Model<any, any,
     __v: number;
 }>;
 export declare const gymsSchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
+    createdAt: NativeDate;
     status: "active" | "paid" | "failed" | "ended" | "cancelled";
-    title: string;
-    description: string;
-    start_price: number;
-    end_time: NativeDate;
     file_id: import("mongoose").Types.ObjectId;
     file_type: string;
+    description: string;
+    title: string;
+    start_price: number;
+    end_time: NativeDate;
     seller_id: import("mongoose").Types.ObjectId;
     seller_name: string;
-    createdAt: NativeDate;
     current_price: number;
-    highest_bidder_price: number;
-    highest_bidder_name: string;
-    bid_count: number;
     min_bid_unit: number;
+    highest_bidder_name: string;
+    highest_bidder_price: number;
     start_time: NativeDate;
+    bid_count: number;
     highest_bidder_id?: import("mongoose").Types.ObjectId | null | undefined;
 }, import("mongoose").Document<unknown, {}, {
+    createdAt: NativeDate;
     status: "active" | "paid" | "failed" | "ended" | "cancelled";
-    title: string;
-    description: string;
-    start_price: number;
-    end_time: NativeDate;
     file_id: import("mongoose").Types.ObjectId;
     file_type: string;
+    description: string;
+    title: string;
+    start_price: number;
+    end_time: NativeDate;
     seller_id: import("mongoose").Types.ObjectId;
     seller_name: string;
-    createdAt: NativeDate;
     current_price: number;
-    highest_bidder_price: number;
-    highest_bidder_name: string;
-    bid_count: number;
     min_bid_unit: number;
+    highest_bidder_name: string;
+    highest_bidder_price: number;
     start_time: NativeDate;
+    bid_count: number;
     highest_bidder_id?: import("mongoose").Types.ObjectId | null | undefined;
 }, {
     id: string;
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
+    createdAt: NativeDate;
     status: "active" | "paid" | "failed" | "ended" | "cancelled";
-    title: string;
-    description: string;
-    start_price: number;
-    end_time: NativeDate;
     file_id: import("mongoose").Types.ObjectId;
     file_type: string;
+    description: string;
+    title: string;
+    start_price: number;
+    end_time: NativeDate;
     seller_id: import("mongoose").Types.ObjectId;
     seller_name: string;
-    createdAt: NativeDate;
     current_price: number;
-    highest_bidder_price: number;
-    highest_bidder_name: string;
-    bid_count: number;
     min_bid_unit: number;
+    highest_bidder_name: string;
+    highest_bidder_price: number;
     start_time: NativeDate;
+    bid_count: number;
     highest_bidder_id?: import("mongoose").Types.ObjectId | null | undefined;
 } & {
     _id: import("mongoose").Types.ObjectId;
@@ -380,22 +380,22 @@ export declare const gymsSchema: Schema<any, import("mongoose").Model<any, any, 
 }, "id"> & {
     id: string;
 }, unknown, {
+    createdAt: NativeDate;
     status: "active" | "paid" | "failed" | "ended" | "cancelled";
-    title: string;
-    description: string;
-    start_price: number;
-    end_time: NativeDate;
     file_id: import("mongoose").Types.ObjectId;
     file_type: string;
+    description: string;
+    title: string;
+    start_price: number;
+    end_time: NativeDate;
     seller_id: import("mongoose").Types.ObjectId;
     seller_name: string;
-    createdAt: NativeDate;
     current_price: number;
-    highest_bidder_price: number;
-    highest_bidder_name: string;
-    bid_count: number;
     min_bid_unit: number;
+    highest_bidder_name: string;
+    highest_bidder_price: number;
     start_time: NativeDate;
+    bid_count: number;
     highest_bidder_id?: import("mongoose").Types.ObjectId | null | undefined;
 } & {
     _id: import("mongoose").Types.ObjectId;
@@ -442,8 +442,8 @@ export declare const gymBidsSchema: Schema<any, import("mongoose").Model<any, an
 export declare const gymResultsSchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
     file_id: import("mongoose").Types.ObjectId;
     file_type: string;
-    seller_id: import("mongoose").Types.ObjectId;
     auction_id: import("mongoose").Types.ObjectId;
+    seller_id: import("mongoose").Types.ObjectId;
     winner_name: string;
     final_price: number;
     is_paid: boolean;
@@ -453,8 +453,8 @@ export declare const gymResultsSchema: Schema<any, import("mongoose").Model<any,
 }, import("mongoose").Document<unknown, {}, {
     file_id: import("mongoose").Types.ObjectId;
     file_type: string;
-    seller_id: import("mongoose").Types.ObjectId;
     auction_id: import("mongoose").Types.ObjectId;
+    seller_id: import("mongoose").Types.ObjectId;
     winner_name: string;
     final_price: number;
     is_paid: boolean;
@@ -466,8 +466,8 @@ export declare const gymResultsSchema: Schema<any, import("mongoose").Model<any,
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
     file_id: import("mongoose").Types.ObjectId;
     file_type: string;
-    seller_id: import("mongoose").Types.ObjectId;
     auction_id: import("mongoose").Types.ObjectId;
+    seller_id: import("mongoose").Types.ObjectId;
     winner_name: string;
     final_price: number;
     is_paid: boolean;
@@ -483,8 +483,8 @@ export declare const gymResultsSchema: Schema<any, import("mongoose").Model<any,
 }, unknown, {
     file_id: import("mongoose").Types.ObjectId;
     file_type: string;
-    seller_id: import("mongoose").Types.ObjectId;
     auction_id: import("mongoose").Types.ObjectId;
+    seller_id: import("mongoose").Types.ObjectId;
     winner_name: string;
     final_price: number;
     is_paid: boolean;
@@ -497,27 +497,27 @@ export declare const gymResultsSchema: Schema<any, import("mongoose").Model<any,
     __v: number;
 }>;
 export declare const communitySchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
-    title: string;
-    content: string;
-    category: "notice" | "talk" | "share" | "question";
-    createdAt: NativeDate;
-    view_count: number;
-    writer: string;
-    writer_id: import("mongoose").Types.ObjectId;
     comment: any[];
+    createdAt: NativeDate;
+    content: string;
+    title: string;
+    category: "talk" | "share" | "question" | "notice";
+    writer_id: import("mongoose").Types.ObjectId;
+    writer: string;
+    view_count: number;
     like_count: number;
     like_list: any[];
     comment_count: number;
     is_deleted: boolean;
 }, import("mongoose").Document<unknown, {}, {
-    title: string;
-    content: string;
-    category: "notice" | "talk" | "share" | "question";
-    createdAt: NativeDate;
-    view_count: number;
-    writer: string;
-    writer_id: import("mongoose").Types.ObjectId;
     comment: any[];
+    createdAt: NativeDate;
+    content: string;
+    title: string;
+    category: "talk" | "share" | "question" | "notice";
+    writer_id: import("mongoose").Types.ObjectId;
+    writer: string;
+    view_count: number;
     like_count: number;
     like_list: any[];
     comment_count: number;
@@ -525,14 +525,14 @@ export declare const communitySchema: Schema<any, import("mongoose").Model<any, 
 }, {
     id: string;
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
-    title: string;
-    content: string;
-    category: "notice" | "talk" | "share" | "question";
-    createdAt: NativeDate;
-    view_count: number;
-    writer: string;
-    writer_id: import("mongoose").Types.ObjectId;
     comment: any[];
+    createdAt: NativeDate;
+    content: string;
+    title: string;
+    category: "talk" | "share" | "question" | "notice";
+    writer_id: import("mongoose").Types.ObjectId;
+    writer: string;
+    view_count: number;
     like_count: number;
     like_list: any[];
     comment_count: number;
@@ -544,14 +544,14 @@ export declare const communitySchema: Schema<any, import("mongoose").Model<any, 
 }, "id"> & {
     id: string;
 }, unknown, {
-    title: string;
-    content: string;
-    category: "notice" | "talk" | "share" | "question";
-    createdAt: NativeDate;
-    view_count: number;
-    writer: string;
-    writer_id: import("mongoose").Types.ObjectId;
     comment: any[];
+    createdAt: NativeDate;
+    content: string;
+    title: string;
+    category: "talk" | "share" | "question" | "notice";
+    writer_id: import("mongoose").Types.ObjectId;
+    writer: string;
+    view_count: number;
     like_count: number;
     like_list: any[];
     comment_count: number;
@@ -563,35 +563,35 @@ export declare const communitySchema: Schema<any, import("mongoose").Model<any, 
 }>;
 export declare const gymChatsSchema: Schema<any, import("mongoose").Model<any, any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
     createdAt: NativeDate;
-    auction_id: import("mongoose").Types.ObjectId;
-    sender_id: import("mongoose").Types.ObjectId;
-    sender_name: string;
     message: string;
-    message_type: "chat" | "bid" | "system";
+    auction_id: import("mongoose").Types.ObjectId;
     room_id: string;
+    sender_id: import("mongoose").Types.ObjectId;
     is_deleted: boolean;
+    sender_name: string;
+    message_type: "chat" | "system" | "bid";
     bid_price?: number | null | undefined;
 }, import("mongoose").Document<unknown, {}, {
     createdAt: NativeDate;
-    auction_id: import("mongoose").Types.ObjectId;
-    sender_id: import("mongoose").Types.ObjectId;
-    sender_name: string;
     message: string;
-    message_type: "chat" | "bid" | "system";
+    auction_id: import("mongoose").Types.ObjectId;
     room_id: string;
+    sender_id: import("mongoose").Types.ObjectId;
     is_deleted: boolean;
+    sender_name: string;
+    message_type: "chat" | "system" | "bid";
     bid_price?: number | null | undefined;
 }, {
     id: string;
 }, import("mongoose").DefaultSchemaOptions> & Omit<{
     createdAt: NativeDate;
-    auction_id: import("mongoose").Types.ObjectId;
-    sender_id: import("mongoose").Types.ObjectId;
-    sender_name: string;
     message: string;
-    message_type: "chat" | "bid" | "system";
+    auction_id: import("mongoose").Types.ObjectId;
     room_id: string;
+    sender_id: import("mongoose").Types.ObjectId;
     is_deleted: boolean;
+    sender_name: string;
+    message_type: "chat" | "system" | "bid";
     bid_price?: number | null | undefined;
 } & {
     _id: import("mongoose").Types.ObjectId;
@@ -601,13 +601,13 @@ export declare const gymChatsSchema: Schema<any, import("mongoose").Model<any, a
     id: string;
 }, unknown, {
     createdAt: NativeDate;
-    auction_id: import("mongoose").Types.ObjectId;
-    sender_id: import("mongoose").Types.ObjectId;
-    sender_name: string;
     message: string;
-    message_type: "chat" | "bid" | "system";
+    auction_id: import("mongoose").Types.ObjectId;
     room_id: string;
+    sender_id: import("mongoose").Types.ObjectId;
     is_deleted: boolean;
+    sender_name: string;
+    message_type: "chat" | "system" | "bid";
     bid_price?: number | null | undefined;
 } & {
     _id: import("mongoose").Types.ObjectId;

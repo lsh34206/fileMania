@@ -116,6 +116,7 @@ constructor(
 const pw_Check = await this.authService.pw_Check({id,password});
 try{
    
+
             if(pw_Check.is_password) {
          
             req.session.user = pw_Check.user;
@@ -124,8 +125,8 @@ try{
             
                 httpOnly:true,
                  path:"/",
-                 sameSite: 'none',
-secure: true
+                /* sameSite: 'lax',
+secure: false*/
             });
 
          

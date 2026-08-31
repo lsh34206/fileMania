@@ -98,8 +98,6 @@ let mainController = class mainController {
                 res.cookie('user', pw_Check.user, {
                     httpOnly: true,
                     path: "/",
-                    sameSite: 'none',
-                    secure: true
                 });
                 res.json(pw_Check.res);
             }

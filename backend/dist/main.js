@@ -12,7 +12,7 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(module_1.mainModule);
     app.use((0, cookie_parser_1.default)());
     app.enableCors({
-        origin: true,
+        origin: process.env.FRONTEND_URI_VALUE,
         credentials: true
     });
     app.use((0, express_session_1.default)({
@@ -23,7 +23,6 @@ async function bootstrap() {
             httpOnly: true,
         },
     }));
-    app.setGlobalPrefix('api');
     await app.listen(8080, () => { console.log("서버시작"); });
 }
 bootstrap();

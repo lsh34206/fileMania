@@ -79,7 +79,7 @@ exports.gymsSchema = new mongoose_1.Schema({
     seller_name: { type: String, required: true },
     start_price: { type: Number, required: true },
     current_price: { type: Number, default: 0 },
-    min_bid_unit: { type: Number, default: 100 },
+    min_bid_unit: { type: Number, default: 1 },
     highest_bidder_id: { type: mongoose_1.Schema.Types.ObjectId, default: null },
     highest_bidder_name: { type: String, default: '' },
     highest_bidder_price: { type: Number, default: 0 },

@@ -97,7 +97,7 @@ function FileListGym() {
 				<div className={`fileList_${category} file-list`}>
 					{data.files.map((f:any, i: number) => (
 						<div className='file-item' key={data.id?.[i] ?? i}>
-							<a href={`/download/gym/${category}/${data.id?.[i]}`}>No.{i+1}&nbsp;&nbsp;&nbsp;{f.title}&nbsp;&nbsp;&nbsp;{f.size}&nbsp;&nbsp;&nbsp;입찰가:{f.start_price*100}원&nbsp;&nbsp;&nbsp;마감시간:{DateUtils.date_to_string(f.end_time)}
+							<a href={`/download/gym/${category}/${data.id?.[i]}`}>No.{i+1}&nbsp;&nbsp;&nbsp;{f.title}&nbsp;&nbsp;&nbsp;{f.size}&nbsp;&nbsp;&nbsp;입찰가:{f.start_price}원&nbsp;&nbsp;&nbsp;마감시간:{DateUtils.date_to_string(f.end_time)}
 							</a>
 							<span className='file-item-right'>
 								<a className='profile-link' href={`/profile/${encodeURIComponent(f.uploader)}`}>

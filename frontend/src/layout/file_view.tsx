@@ -51,7 +51,7 @@ function FileView() {
             </div>
         )
     }
-    const src = `/media/${type}/${id}`; // 인증 기반 미리보기/플레이어용
+    const src = `${import.meta.env.VITE_API_VALUE}/media/${type}/${id}`; // 인증 기반 미리보기/플레이어용
     console.log(src);
     const downloadHref = `/download/file/${type}/${id}`; // 강제 다운로드 라우트
     
@@ -60,7 +60,7 @@ const locked = data.file.download_type === 'paid' && !data.purchased;
 const purchaseHref = `/purchase/${type}/${id}`;
 
 const actionLink = data.file.download_type === 'free' ? (
-  <a href={import.meta.env.VITE_BACKEND__URI_VALUE+`/download_file/${type}/${id}`} className='view-download'>
+  <a href={import.meta.env.VITE_BACKEND_URI_VALUE+`/download_file/${type}/${id}`} className='view-download'>
     {data.file.title + "  다운로드"}
   </a>
 ) : locked ? (
@@ -68,7 +68,7 @@ const actionLink = data.file.download_type === 'free' ? (
     {data.file.title + "  구매하기 (" + data.file.price + "원)"}
   </a>
 ) : data.file.download_type === 'paid' ? (
-  <a href={import.meta.env.VITE_BACKEND__URI_VALUE+`/download_file/${type}/${id}`} className='view-download'>
+  <a href={import.meta.env.VITE_BACKEND_URI_VALUE+`/download_file/${type}/${id}`} className='view-download'>
     {data.file.title + "  다운로드("+data.file.price+")원"}
   </a>
 ) : <span></span>;
@@ -78,11 +78,11 @@ if (data.file.type === 'image') {
     content = (<div>
         {locked ? (
           <div className='purchase-preview'>
-            <img src={import.meta.env.VITE_BACKEND__URI_VALUE+`/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
+            <img src={import.meta.env.VITE_BACKEND_URI_VALUE+`/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
             <div className='purchase-overlay'><span>구매 후 확인 가능합니다</span></div>
           </div>
         ) : (
-          <img src={import.meta.env.VITE_BACKEND__URI_VALUE+`${src}`} alt={data.file.title} width="500px" height="500px" className='file_view_image'/>
+          <img src={import.meta.env.VITE_BACKEND_URI_VALUE+`${src}`} alt={data.file.title} width="500px" height="500px" className='file_view_image'/>
         )}
         <br />
         {actionLink}
@@ -91,11 +91,11 @@ if (data.file.type === 'image') {
     content = (<div>
         {locked ? (
           <div className='purchase-preview'>
-            <img src={import.meta.env.VITE_BACKEND__URI_VALUE+`/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
+            <img src={import.meta.env.VITE_BACKEND_URI_VALUE+`/media/${type}/${id}/preview`} alt={data.file.title} width="500px" height="500px" className='file_view_image purchase-blur'/>
             <div className='purchase-overlay'><span>구매 후 재생 가능합니다</span></div>
           </div>
         ) : (
-          <video src={import.meta.env.VITE_BACKEND__URI_VALUE+`${src}`} controls className='file_view_video'/>
+          <video src={import.meta.env.VITE_BACKEND_URI_VALUE+`${src}`} controls className='file_view_video'/>
         )}
         <br/>
         {actionLink}
@@ -105,7 +105,7 @@ if (data.file.type === 'image') {
         {locked ? (
           <div className='purchase-locked'><span>구매 후 재생할 수 있습니다.</span></div>
         ) : (
-          <audio src={import.meta.env.VITE_BACKEND__URI_VALUE+`${src}`} controls className='file_view_audio'/>
+          <audio src={import.meta.env.VITE_BACKEND_URI_VALUE+`${src}`} controls className='file_view_audio'/>
         )}
         <br/>
         {actionLink}
