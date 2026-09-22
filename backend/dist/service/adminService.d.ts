@@ -1,9 +1,11 @@
 import { Model } from "mongoose";
 import { socketService } from "./socket";
+import { logService } from "./logService";
 export declare class adminService {
     private readonly socketService;
+    private readonly logService;
     private readonly userModel;
-    constructor(socketService: socketService, userModel: Model<any>);
+    constructor(socketService: socketService, logService: logService, userModel: Model<any>);
     private requireAdmin;
     listUsers(adminId: string): Promise<{
         success: boolean;
@@ -25,5 +27,14 @@ export declare class adminService {
     restoreUser(adminId: string, targetId: string): Promise<{
         success: boolean;
         message: string;
+    }>;
+    listLogs(adminId: string, type?: string, keyword?: string): Promise<{
+        success: boolean;
+        message: string;
+        logs?: undefined;
+    } | {
+        success: boolean;
+        logs: any[];
+        message?: undefined;
     }>;
 }

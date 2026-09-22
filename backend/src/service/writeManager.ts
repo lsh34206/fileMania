@@ -6,6 +6,7 @@ import {Model,Types} from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import fs from "fs";
 import { xpService } from "src/service/xpService";
+import { logService } from "src/service/logService";
 
 
 
@@ -15,6 +16,7 @@ export class writeManagerService{
     private modelMap: Record<string, Model<any>>;
     constructor(
      private readonly xpService: xpService,
+     private readonly logService: logService,
 
      @InjectModel('users')
      private readonly userModel: Model<any>,
@@ -89,6 +91,8 @@ export class writeManagerService{
             await this.userModel.updateOne({_id:writer_info._id},{$inc:{writer_count:1}});
 
             await this.xpService.addXp(writer_id, 3);
+
+            await this.logService.write('post_write', `${writer_info.name}님이 [${type}] "${post_data.title}" 게시글을 작성했습니다.`, writer_id, writer_info.name, { post_id: write_ok._id?.toString(), category: type });
 
             return { success:true, message: "게시글 작성 완료" };
 
@@ -226,7 +230,7 @@ export class writeManagerService{
                 return { success: false, message: '삭제 권한이 없습니다.' };
             }
 
-            const file_path = path.join("C:\\Users\\lsh34\\Web\\fileMania\\backend", file.path);
+            const file_path = path.join(process.cwd(), file.path);
             if(fs.existsSync(file_path)){
                 fs.unlinkSync(file_path);
             }

@@ -2,11 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { Model, Types } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { socketService } from "src/service/socket";
+import { logService } from "src/service/logService";
 
 @Injectable()
 export class adminService {
     constructor(
         private readonly socketService: socketService,
+        private readonly logService: logService,
 
         @InjectModel('users')
         private readonly userModel: Model<any>,
@@ -115,5 +117,15 @@ export class adminService {
         );
 
         return { success: true, message: `${target.name}님의 제재를 해제했습니다.` };
+    }
+
+    async listLogs(adminId: string, type?: string, keyword?: string) {
+        const admin = await this.requireAdmin(adminId);
+        if (!admin) {
+            return { success: false, message: '관리자 권한이 필요합니다.' };
+        }
+
+        const logs = await this.logService.list(type, keyword);
+        return { success: true, logs };
     }
 }

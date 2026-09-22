@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.socketModule = void 0;
 const common_1 = require("@nestjs/common");
 const socket_1 = require("../service/socket");
+const logService_1 = require("../service/logService");
 const mongoose_1 = require("@nestjs/mongoose");
 const schema_1 = require("../db/schema");
 let socketModule = class socketModule {
@@ -30,9 +31,10 @@ exports.socketModule = socketModule = __decorate([
                 { name: "gymChats", schema: schema_1.gymChatsSchema },
                 { name: "chatrooms", schema: schema_1.chatroomSchema },
                 { name: "messages", schema: schema_1.messageSchema },
+                { name: "systemLogs", schema: schema_1.systemLogSchema },
             ]),
         ],
-        providers: [socket_1.socketService], exports: [socket_1.socketService]
+        providers: [socket_1.socketService, logService_1.logService], exports: [socket_1.socketService, logService_1.logService]
     })
 ], socketModule);
 //# sourceMappingURL=socketModule.js.map

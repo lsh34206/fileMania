@@ -113,10 +113,10 @@ body {
   color: var(--brand);
 }
 .Menu table tbody {
-  visibility: hidden;
+  display: none;
 }
 .Menu table:hover tbody {
-  visibility: visible;
+  display: table-row-group;
 }
 
 .App > hr {
@@ -831,6 +831,36 @@ textarea.field {
 }
 .reply-item .comment-content {
   font-size: 13px;
+}
+
+/* ===== Stats banner (home) ===== */
+.stats-banner {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 24px;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.stats-banner-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 96px;
+}
+.stats-banner-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+}
+.stats-banner-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* ===== Featured post (home) ===== */

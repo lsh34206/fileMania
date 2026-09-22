@@ -1,5 +1,7 @@
 import { Model } from "mongoose";
+import { logService } from "./logService";
 export declare class downloadService {
+    private readonly logService;
     private readonly userModel;
     private readonly imageModel;
     private readonly audioModel;
@@ -8,7 +10,7 @@ export declare class downloadService {
     private readonly documentModel;
     private readonly purchaseModel;
     private modelMap;
-    constructor(userModel: Model<any>, imageModel: Model<any>, audioModel: Model<any>, videoModel: Model<any>, appModel: Model<any>, documentModel: Model<any>, purchaseModel: Model<any>);
+    constructor(logService: logService, userModel: Model<any>, imageModel: Model<any>, audioModel: Model<any>, videoModel: Model<any>, appModel: Model<any>, documentModel: Model<any>, purchaseModel: Model<any>);
     private checkAccess;
     serve_file(type: string, id: string, userId?: string): Promise<{
         success: boolean;

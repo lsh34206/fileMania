@@ -11,7 +11,7 @@ function Login() {
         fetch(import.meta.env.VITE_API_VALUE+`/login_ok`, {
             method: 'POST',
             body: JSON.stringify({id: id, password: password}),
-            credentials: 'include',
+            credentials: 'include' as RequestCredentials,
             headers: {
                 'Content-Type': 'application/json',
             },

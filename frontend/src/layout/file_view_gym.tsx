@@ -51,6 +51,7 @@ function FileViewGym() {
   const [roomUsers, setRoomUsers] = useState<{ name: string; level: number }[]>([])
   const [time,setTime] = useState<Number>(0);
   const [endTime, setEndTime] = useState<string>('')
+  const [endedInfo, setEndedInfo] = useState<{ winner_id: string | null; winner_name: string; final_price: number } | null>(null)
   const joinedRef = useRef(false)
 
   const pathParts = window.location.pathname.split('/').filter((item) => item !== '')
@@ -80,10 +81,10 @@ function FileViewGym() {
 
   useEffect(() => {
     if (!data.name || joinedRef.current) return
-    if (data.gym.status === 'ended') {
+    if (data.gym?.status === 'ended') {
       alert('종료된 경매입니다.');
-    location.href = '/download/gym';
-    
+      location.href = '/download/gym';
+      return
     }
     joinedRef.current = true
 
@@ -92,6 +93,18 @@ function FileViewGym() {
       userId: data.user_id,
     })
   }, [data.name, id])
+
+  useEffect(() => {
+    const rejoin = () => {
+      if (joinedRef.current) {
+        socket.emit('join_gym_room', { gymId: id, userId: data.user_id })
+      }
+    }
+    socket.on('connect', rejoin)
+    return () => {
+      socket.off('connect', rejoin)
+    }
+  }, [id, data.user_id])
 
   useEffect(() => {
     const receiveChat = (chat: ChatType) => {
@@ -117,19 +130,39 @@ function FileViewGym() {
       setRoomUsers(users)
     }
 
+    const receiveGymEnded = (payload: { winner_id: string | null; winner_name: string; final_price: number; title: string }) => {
+      setEndedInfo(payload)
+    }
+
     socket.on('receive_chat', receiveChat)
     socket.on('receive_bid', receiveBid)
     socket.on('receive_system', receiveSystem)
     socket.on('receive_room_users', receiveRoomUsers)
+    socket.on('gym_ended', receiveGymEnded)
 
     return () => {
       socket.off('receive_chat', receiveChat)
       socket.off('receive_bid', receiveBid)
       socket.off('receive_system', receiveSystem)
       socket.off('receive_room_users', receiveRoomUsers)
+      socket.off('gym_ended', receiveGymEnded)
 
     }
   }, [])
+
+  useEffect(() => {
+    if (!endTime) return
+
+    const tick = () => {
+      const end = Math.floor(new Date(endTime).getTime() / 1000)
+      const now = Math.floor(Date.now() / 1000)
+      setTime(Math.max(end - now, 0))
+    }
+
+    tick()
+    const interval = setInterval(tick, 1000)
+    return () => clearInterval(interval)
+  }, [endTime])
 
   const sendMessage = () => {
     if (!message.trim()) return
@@ -207,6 +240,16 @@ function FileViewGym() {
             <h1 style={styles.title}>{data.file.title}</h1>
           </header>
 
+          {endedInfo && (
+            <div style={styles.endedBanner}>
+              {endedInfo.winner_id === data.user_id
+                ? '🎉 낙찰되었습니다! 축하드립니다.'
+                : endedInfo.winner_id
+                  ? `경매가 종료되었습니다. 낙찰자: ${endedInfo.winner_name} (${endedInfo.final_price}원)`
+                  : '경매가 종료되었습니다. 입찰자가 없어 유찰되었습니다.'}
+            </div>
+          )}
+
           <div style={styles.infoGrid}>
             <div style={styles.infoCard}>
               <span style={styles.infoLabel}>크기</span>
@@ -233,17 +276,9 @@ function FileViewGym() {
             </div>
             <div style={styles.timeBlock}>
               <span style={styles.priceLabel}>종료까지</span>
-              <span className='time' style={styles.timeValue}>{time.toString()}</span>
+              <span className='time' style={styles.timeValue}>{Number(time) > 0 ? time.toString() : '종료'}</span>
             </div>
           </div>
-
-          {setInterval(()=>{
-            const end = Math.floor(new Date(endTime).getTime() /1000);
-            const now = Math.floor(Date.now()/1000);
-            setTime(end-now);
-          },1000)
-          }
-
 
           <p style={styles.deadline}>마감시간: {DateUtils.date_to_string(endTime)}</p>
 
@@ -261,8 +296,9 @@ function FileViewGym() {
               placeholder="입찰가"
               value={bidPrice}
               onChange={(e) => setBidPrice(e.target.value)}
+              disabled={!!endedInfo}
             />
-            <button style={styles.primaryBtn} onClick={sendBid}>입찰하기</button>
+            <button style={styles.primaryBtn} onClick={sendBid} disabled={!!endedInfo}>입찰하기</button>
           </div>
 
           <p style={styles.notice}>
@@ -431,6 +467,15 @@ const styles: { [key: string]: CSSProperties } = {
   timeValue: {
     fontSize: 28,
     fontWeight: 800,
+  },
+  endedBanner: {
+    padding: '12px 16px',
+    borderRadius: 10,
+    background: '#fff4e5',
+    color: '#b45309',
+    fontWeight: 700,
+    fontSize: 14,
+    marginBottom: 16,
   },
   deadline: {
     fontSize: 13,

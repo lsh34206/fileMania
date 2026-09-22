@@ -20,8 +20,12 @@ const mongoose_2 = require("@nestjs/mongoose");
 const makeId_1 = require("../utils/makeId");
 const dateUtils_1 = require("../utils/dateUtils");
 const xpService_1 = require("./xpService");
+const socket_1 = require("./socket");
+const logService_1 = require("./logService");
 let cornService = class cornService {
     xpService;
+    socketService;
+    logService;
     userModel;
     imageModel;
     audioModel;
@@ -35,8 +39,10 @@ let cornService = class cornService {
     chatroomsModel;
     messagesModel;
     modelMap;
-    constructor(xpService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel, chatroomsModel, messagesModel) {
+    constructor(xpService, socketService, logService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel, chatroomsModel, messagesModel) {
         this.xpService = xpService;
+        this.socketService = socketService;
+        this.logService = logService;
         this.userModel = userModel;
         this.imageModel = imageModel;
         this.audioModel = audioModel;
@@ -73,39 +79,50 @@ let cornService = class cornService {
                     await this.gymsModel.updateOne({ _id: new mongoose_1.Types.ObjectId(gym._id) }, { $set: { status: "ended" } });
                     await this.gymResultsModel.insertOne({
                         auction_id: new mongoose_1.Types.ObjectId(gym._id),
-                        winner_id: new mongoose_1.Types.ObjectId(gym.winner_id),
+                        winner_id: gym.highest_bidder_id ? new mongoose_1.Types.ObjectId(gym.highest_bidder_id) : null,
                         winner_name: gym.highest_bidder_name,
                         final_price: gym.highest_bidder_price,
                         seller_id: new mongoose_1.Types.ObjectId(gym.seller_id),
                         file_id: new mongoose_1.Types.ObjectId(gym.file_id),
                         file_type: gym.file_type
                     });
-                    const user = await this.userModel.findOne({ _id: new mongoose_1.Types.ObjectId(gym.highest_bidder_id) });
                     if (gym.highest_bidder_id) {
+                        const user = await this.userModel.findOne({ _id: new mongoose_1.Types.ObjectId(gym.highest_bidder_id) });
                         await this.xpService.addXp(gym.highest_bidder_id.toString(), 15);
+                        var userMessagesList = user?.massege_list ?? [];
+                        userMessagesList.push({
+                            id: makeId_1.makeIdUtils.makeId(),
+                            message: `${gym.title} 경매에 낙찰되었습니다. 축하드립니다!\n 결제를 진행할 채팅방이 추가되었습니다.`,
+                            sender_id: gym.seller_id,
+                            sender_name: gym.seller_name,
+                            receiver_id: gym.highest_bidder_id,
+                            receiver_name: gym.highest_bidder_name,
+                            createdAt: new Date()
+                        });
+                        await this.modelMap['chatrooms'].insertOne({
+                            type: "경매",
+                            auction_id: gym._id,
+                            createAt: dateUtils_1.DateUtils.now_date(),
+                            participants: [user._id, gym.seller_id]
+                        });
+                        await this.userModel.updateOne({ _id: new mongoose_1.Types.ObjectId(gym.seller_id) }, {
+                            $set: {
+                                massege_list: userMessagesList
+                            }
+                        });
                     }
-                    var userMessagesList = user?.massege_list;
-                    var userChatList = user?.chat_list;
-                    userMessagesList.push({
-                        id: makeId_1.makeIdUtils.makeId(),
-                        message: `${gym.title} 경매에 낙찰되었습니다. 축하드립니다!\n 결제를 진행할 채팅방이 추가되었습니다.`,
-                        sender_id: gym.seller_id,
-                        sender_name: gym.seller_name,
-                        receiver_id: gym.highest_bidder_id,
-                        receiver_name: gym.highest_bidder_name,
-                        createdAt: new Date()
+                    this.socketService.notifyGymEnded(gym.file_id.toString(), {
+                        winner_id: gym.highest_bidder_id ? gym.highest_bidder_id.toString() : null,
+                        winner_name: gym.highest_bidder_name,
+                        final_price: gym.highest_bidder_price,
+                        title: gym.title
                     });
-                    const chat = await this.modelMap['chatrooms'].insertOne({
-                        type: "경매",
-                        auction_id: gym._id,
-                        createAt: dateUtils_1.DateUtils.now_date(),
-                        participants: [user._id, gym.seller_id]
-                    });
-                    await this.userModel.updateOne({ _id: new mongoose_1.Types.ObjectId(gym.seller_id) }, {
-                        $set: {
-                            massege_list: userMessagesList
-                        }
-                    });
+                    if (gym.highest_bidder_id) {
+                        await this.logService.write('auction', `"${gym.title}" 경매가 종료되어 ${gym.highest_bidder_name}님이 ${gym.highest_bidder_price.toLocaleString()}원에 낙찰받았습니다.`, gym.highest_bidder_id.toString(), gym.highest_bidder_name, { auction_id: gym.file_id.toString() });
+                    }
+                    else {
+                        await this.logService.write('auction', `"${gym.title}" 경매가 입찰자 없이 유찰되었습니다.`, null, '', { auction_id: gym.file_id.toString() });
+                    }
                 }
             }
             console.log("Gym end time check completed", gyms.length);
@@ -126,19 +143,21 @@ __decorate([
 ], cornService.prototype, "gymEndTimeCheck", null);
 exports.cornService = cornService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, mongoose_2.InjectModel)('users')),
-    __param(2, (0, mongoose_2.InjectModel)('image')),
-    __param(3, (0, mongoose_2.InjectModel)('audio')),
-    __param(4, (0, mongoose_2.InjectModel)('video')),
-    __param(5, (0, mongoose_2.InjectModel)('app')),
-    __param(6, (0, mongoose_2.InjectModel)('document')),
-    __param(7, (0, mongoose_2.InjectModel)('gyms')),
-    __param(8, (0, mongoose_2.InjectModel)('gymResults')),
-    __param(9, (0, mongoose_2.InjectModel)('gymBids')),
-    __param(10, (0, mongoose_2.InjectModel)('gymChats')),
-    __param(11, (0, mongoose_2.InjectModel)('chatrooms')),
-    __param(12, (0, mongoose_2.InjectModel)('messages')),
+    __param(3, (0, mongoose_2.InjectModel)('users')),
+    __param(4, (0, mongoose_2.InjectModel)('image')),
+    __param(5, (0, mongoose_2.InjectModel)('audio')),
+    __param(6, (0, mongoose_2.InjectModel)('video')),
+    __param(7, (0, mongoose_2.InjectModel)('app')),
+    __param(8, (0, mongoose_2.InjectModel)('document')),
+    __param(9, (0, mongoose_2.InjectModel)('gyms')),
+    __param(10, (0, mongoose_2.InjectModel)('gymResults')),
+    __param(11, (0, mongoose_2.InjectModel)('gymBids')),
+    __param(12, (0, mongoose_2.InjectModel)('gymChats')),
+    __param(13, (0, mongoose_2.InjectModel)('chatrooms')),
+    __param(14, (0, mongoose_2.InjectModel)('messages')),
     __metadata("design:paramtypes", [xpService_1.xpService,
+        socket_1.socketService,
+        logService_1.logService,
         mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,

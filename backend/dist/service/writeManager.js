@@ -55,8 +55,10 @@ const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const fs_1 = __importDefault(require("fs"));
 const xpService_1 = require("./xpService");
+const logService_1 = require("./logService");
 let writeManagerService = class writeManagerService {
     xpService;
+    logService;
     userModel;
     imageModel;
     audioModel;
@@ -69,8 +71,9 @@ let writeManagerService = class writeManagerService {
     gymChatsModel;
     community;
     modelMap;
-    constructor(xpService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel, community) {
+    constructor(xpService, logService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel, community) {
         this.xpService = xpService;
+        this.logService = logService;
         this.userModel = userModel;
         this.imageModel = imageModel;
         this.audioModel = audioModel;
@@ -111,6 +114,7 @@ let writeManagerService = class writeManagerService {
             const write_ok = await collection.insertOne({ category: type, writer: writer_info.name, writer_id: writer_info._id, title: post_data.title, content: post_data.content });
             await this.userModel.updateOne({ _id: writer_info._id }, { $inc: { writer_count: 1 } });
             await this.xpService.addXp(writer_id, 3);
+            await this.logService.write('post_write', `${writer_info.name}님이 [${type}] "${post_data.title}" 게시글을 작성했습니다.`, writer_id, writer_info.name, { post_id: write_ok._id?.toString(), category: type });
             return { success: true, message: "게시글 작성 완료" };
         }
         catch (err) {
@@ -223,7 +227,7 @@ let writeManagerService = class writeManagerService {
             if (file.uploader !== user.name) {
                 return { success: false, message: '삭제 권한이 없습니다.' };
             }
-            const file_path = path.join("C:\\Users\\lsh34\\Web\\fileMania\\backend", file.path);
+            const file_path = path.join(process.cwd(), file.path);
             if (fs_1.default.existsSync(file_path)) {
                 fs_1.default.unlinkSync(file_path);
             }
@@ -245,18 +249,19 @@ let writeManagerService = class writeManagerService {
 exports.writeManagerService = writeManagerService;
 exports.writeManagerService = writeManagerService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, mongoose_2.InjectModel)('users')),
-    __param(2, (0, mongoose_2.InjectModel)('image')),
-    __param(3, (0, mongoose_2.InjectModel)('audio')),
-    __param(4, (0, mongoose_2.InjectModel)('video')),
-    __param(5, (0, mongoose_2.InjectModel)('app')),
-    __param(6, (0, mongoose_2.InjectModel)('document')),
-    __param(7, (0, mongoose_2.InjectModel)('gyms')),
-    __param(8, (0, mongoose_2.InjectModel)('gymResults')),
-    __param(9, (0, mongoose_2.InjectModel)('gymBids')),
-    __param(10, (0, mongoose_2.InjectModel)('gymChats')),
-    __param(11, (0, mongoose_2.InjectModel)('community')),
+    __param(2, (0, mongoose_2.InjectModel)('users')),
+    __param(3, (0, mongoose_2.InjectModel)('image')),
+    __param(4, (0, mongoose_2.InjectModel)('audio')),
+    __param(5, (0, mongoose_2.InjectModel)('video')),
+    __param(6, (0, mongoose_2.InjectModel)('app')),
+    __param(7, (0, mongoose_2.InjectModel)('document')),
+    __param(8, (0, mongoose_2.InjectModel)('gyms')),
+    __param(9, (0, mongoose_2.InjectModel)('gymResults')),
+    __param(10, (0, mongoose_2.InjectModel)('gymBids')),
+    __param(11, (0, mongoose_2.InjectModel)('gymChats')),
+    __param(12, (0, mongoose_2.InjectModel)('community')),
     __metadata("design:paramtypes", [xpService_1.xpService,
+        logService_1.logService,
         mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,

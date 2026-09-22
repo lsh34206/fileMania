@@ -7,11 +7,11 @@ export class messageController{
 
     @Get("/message")
     async message_main(@Req() req:any){
-        if(!req.cookies.user){
+        if(!req.signedCookies.user){
             return { name: null };
         }
 
-        const ret = await this.messageService.message_main(req.cookies.user);
+        const ret = await this.messageService.message_main(req.signedCookies.user);
         if(ret === null){
             return { name: null };
         }
@@ -21,10 +21,10 @@ export class messageController{
 
     @Delete("/message/:id")
     async delete_mail(@Req() req:any, @Param("id") id:string){
-        if(!req.cookies.user){
+        if(!req.signedCookies.user){
             return { success: false, message: '로그인 해주세요.' };
         }
 
-        return await this.messageService.deleteMail(req.cookies.user, id);
+        return await this.messageService.deleteMail(req.signedCookies.user, id);
     }
 }

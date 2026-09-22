@@ -21,7 +21,7 @@ let mediaController = class mediaController {
         this.downloadService = downloadService;
     }
     async serve(req, type, id, res) {
-        const result = await this.downloadService.serve_file(type, id, req.cookies.user);
+        const result = await this.downloadService.serve_file(type, id, req.signedCookies.user);
         if (!result.success || !result.path) {
             return res.status(result.status ?? 404).json(result);
         }

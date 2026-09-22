@@ -21,20 +21,20 @@ let messageController = class messageController {
         this.messageService = messageService;
     }
     async message_main(req) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { name: null };
         }
-        const ret = await this.messageService.message_main(req.cookies.user);
+        const ret = await this.messageService.message_main(req.signedCookies.user);
         if (ret === null) {
             return { name: null };
         }
         return ret;
     }
     async delete_mail(req, id) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
-        return await this.messageService.deleteMail(req.cookies.user, id);
+        return await this.messageService.deleteMail(req.signedCookies.user, id);
     }
 };
 exports.messageController = messageController;

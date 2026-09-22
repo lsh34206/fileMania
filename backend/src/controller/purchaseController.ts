@@ -7,9 +7,9 @@ export class purchaseController {
 
     @Post(":type/:id")
     async purchase(@Req() req: any, @Param("type") type: string, @Param("id") id: string) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
-        return await this.purchaseService.purchase(req.cookies.user, type, id);
+        return await this.purchaseService.purchase(req.signedCookies.user, type, id);
     }
 }

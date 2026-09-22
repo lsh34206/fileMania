@@ -7,6 +7,7 @@ import * as fs from "fs";
 import sharp from "sharp";
 import ffmpeg from "fluent-ffmpeg";
 import ffmpegPath from "ffmpeg-static";
+import { logService } from "src/service/logService";
 
 if (ffmpegPath) {
   ffmpeg.setFfmpegPath(ffmpegPath);
@@ -19,6 +20,8 @@ if (ffmpegPath) {
 export class downloadService{
   private modelMap: Record<string, Model<any>>;
 constructor(
+ private readonly logService: logService,
+
  @InjectModel('users')
  private readonly userModel: Model<any>,
 
@@ -213,6 +216,10 @@ async download_file(type: string, id: string, userId?: string) {
       { _id: doc._id },
       { $inc: { download_count: 1 } }
     );
+
+    const downloader = userId ? await this.userModel.findById(userId).select('name') : null;
+    const downloaderName = downloader?.name ?? '비회원';
+    await this.logService.write('file_download', `${downloaderName}님이 "${doc.title}" 파일을 다운로드했습니다.`, userId, downloader?.name ?? '', { file_id: doc._id.toString(), file_type: type });
 
     return {
       success: true,

@@ -57,10 +57,12 @@ const fs = __importStar(require("fs"));
 const sharp_1 = __importDefault(require("sharp"));
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const ffmpeg_static_1 = __importDefault(require("ffmpeg-static"));
+const logService_1 = require("./logService");
 if (ffmpeg_static_1.default) {
     fluent_ffmpeg_1.default.setFfmpegPath(ffmpeg_static_1.default);
 }
 let downloadService = class downloadService {
+    logService;
     userModel;
     imageModel;
     audioModel;
@@ -69,7 +71,8 @@ let downloadService = class downloadService {
     documentModel;
     purchaseModel;
     modelMap;
-    constructor(userModel, imageModel, audioModel, videoModel, appModel, documentModel, purchaseModel) {
+    constructor(logService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, purchaseModel) {
+        this.logService = logService;
         this.userModel = userModel;
         this.imageModel = imageModel;
         this.audioModel = audioModel;
@@ -215,6 +218,9 @@ let downloadService = class downloadService {
                 return { success: false, message: "file not found" };
             }
             await collection.updateOne({ _id: doc._id }, { $inc: { download_count: 1 } });
+            const downloader = userId ? await this.userModel.findById(userId).select('name') : null;
+            const downloaderName = downloader?.name ?? '비회원';
+            await this.logService.write('file_download', `${downloaderName}님이 "${doc.title}" 파일을 다운로드했습니다.`, userId, downloader?.name ?? '', { file_id: doc._id.toString(), file_type: type });
             return {
                 success: true,
                 message: "download success",
@@ -231,14 +237,15 @@ let downloadService = class downloadService {
 exports.downloadService = downloadService;
 exports.downloadService = downloadService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_2.InjectModel)('users')),
-    __param(1, (0, mongoose_2.InjectModel)('image')),
-    __param(2, (0, mongoose_2.InjectModel)('audio')),
-    __param(3, (0, mongoose_2.InjectModel)('video')),
-    __param(4, (0, mongoose_2.InjectModel)('app')),
-    __param(5, (0, mongoose_2.InjectModel)('document')),
-    __param(6, (0, mongoose_2.InjectModel)('purchases')),
-    __metadata("design:paramtypes", [mongoose_1.Model,
+    __param(1, (0, mongoose_2.InjectModel)('users')),
+    __param(2, (0, mongoose_2.InjectModel)('image')),
+    __param(3, (0, mongoose_2.InjectModel)('audio')),
+    __param(4, (0, mongoose_2.InjectModel)('video')),
+    __param(5, (0, mongoose_2.InjectModel)('app')),
+    __param(6, (0, mongoose_2.InjectModel)('document')),
+    __param(7, (0, mongoose_2.InjectModel)('purchases')),
+    __metadata("design:paramtypes", [logService_1.logService,
+        mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,

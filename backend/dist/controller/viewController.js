@@ -36,23 +36,23 @@ let viewController = class viewController {
         }
     }
     async gym_view(req, type, keyword) {
-        const name = await this.login_auth(req.cookies.user);
+        const name = await this.login_auth(req.signedCookies.user);
         const files = await this.listViewService.gym_view(type, name, keyword);
         return { files: files.files, id: files.id };
     }
     async free_view(req, type, keyword) {
-        const name = await this.login_auth(req.cookies.user);
+        const name = await this.login_auth(req.signedCookies.user);
         const files = await this.listViewService.free_view(type, name, keyword);
         return { files: files.files, id: files.id, writer_is_me: files.writer_is_me };
     }
     async paid_view(req, type, keyword) {
-        const name = await this.login_auth(req.cookies.user);
+        const name = await this.login_auth(req.signedCookies.user);
         const files = await this.listViewService.paid_view(type, name, keyword);
         return { files: files.files, id: files.id, writer_is_me: files.writer_is_me };
     }
     async view_file(req, download_type, type, id) {
         if (download_type === "gym") {
-            const ret = await this.viewService.gym_view(download_type, type, id, req.cookies.user);
+            const ret = await this.viewService.gym_view(download_type, type, id, req.signedCookies.user);
             return { file: ret.file, name: ret.name, writer_is_me: ret.writer_is_me, id: ret.id, user_id: ret.user_id,
                 chatList: ret.chatList,
                 bidsList: ret.bidsList,
@@ -60,7 +60,7 @@ let viewController = class viewController {
             };
         }
         else {
-            const ret = await this.viewService.view_file(download_type, type, id, req.cookies.user);
+            const ret = await this.viewService.view_file(download_type, type, id, req.signedCookies.user);
             return { file: ret.file, name: ret.name, writer_is_me: ret.writer_is_me, id: ret.id, purchased: ret.purchased };
         }
     }
@@ -68,9 +68,12 @@ let viewController = class viewController {
         const ret = await this.listViewService.featured_post();
         return { post: ret.post, kind: ret.kind };
     }
+    async home_stats() {
+        return await this.listViewService.home_stats();
+    }
     async commuity_list_view(type, req, keyword, sort) {
         try {
-            const name = await this.login_auth(req.cookies.user);
+            const name = await this.login_auth(req.signedCookies.user);
             const ret = await this.listViewService.community_list_view(type, name, keyword, sort);
             return { name: name, posts: ret.list };
         }
@@ -80,16 +83,16 @@ let viewController = class viewController {
     }
     async commuity_post_load(type, id, req, res) {
         try {
-            const viewer = req.cookies.user;
-            console.log(viewer);
+            const viewer = req.signedCookies.user;
             const name = await this.login_auth(viewer);
-            console.log(name);
             const cookieKey = `viewed_${viewer}`;
             const alreadyViewed = req.cookies[cookieKey];
             if (!alreadyViewed) {
                 res.cookie(cookieKey, 'true', {
                     maxAge: 12 * 60 * 60 * 1000,
                     httpOnly: true,
+                    sameSite: 'lax',
+                    secure: process.env.NODE_ENV === 'production',
                 });
                 const ret = await this.viewService.community_post_count_view(type, id, name, viewer);
                 return { name: name, post: ret.post, myId: viewer, writer_is_me: ret.writer_is_me, is_admin: ret.is_admin };
@@ -146,6 +149,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], viewController.prototype, "community_featured", null);
+__decorate([
+    (0, common_1.Get)("/home_stats"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], viewController.prototype, "home_stats", null);
 __decorate([
     (0, common_1.Post)("/community/:type"),
     __param(0, (0, common_1.Param)("type")),

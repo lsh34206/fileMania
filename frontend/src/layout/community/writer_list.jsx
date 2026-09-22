@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import '../../App.css'
+import StatsBanner from '../statsBanner'
 
 function WriterList() {
 
@@ -51,6 +52,8 @@ function WriterList() {
     return (
         <div className='page'>
             <h1 className='page-title'>게시글 목록</h1>
+
+            <StatsBanner />
 
             <div className='tabs'>
                

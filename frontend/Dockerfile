@@ -1,0 +1,24 @@
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+ARG VITE_API_VALUE
+ARG VITE_BACKEND_URI_VALUE
+ARG VITE_SOCKETIO_URI_VALUE
+ARG VITE_TOSS_CLIENT_KEY
+ENV VITE_API_VALUE=$VITE_API_VALUE \
+    VITE_BACKEND_URI_VALUE=$VITE_BACKEND_URI_VALUE \
+    VITE_SOCKETIO_URI_VALUE=$VITE_SOCKETIO_URI_VALUE \
+    VITE_TOSS_CLIENT_KEY=$VITE_TOSS_CLIENT_KEY
+
+RUN npm run build
+
+FROM nginx:alpine AS runner
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80

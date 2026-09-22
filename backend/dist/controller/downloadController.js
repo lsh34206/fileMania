@@ -25,7 +25,7 @@ let downloadController = class downloadController {
     }
     async download(req, type, id, res) {
         try {
-            const result = await this.downloadService.download_file(type, id, req.cookies.user);
+            const result = await this.downloadService.download_file(type, id, req.signedCookies.user);
             if (!result.success || !result.path || !result.name) {
                 return res.status(result.status ?? 404).json(result);
             }

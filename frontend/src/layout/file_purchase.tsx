@@ -24,7 +24,7 @@ function FilePurchase() {
       try {
         const [viewRes, meRes] = await Promise.all([
           axios.get(import.meta.env.VITE_API_VALUE+`/download/paid/${type}/${id}`, { withCredentials: true }),
-          axios.get('http://ec2-15-164-230-209.ap-northeast-2.compute.amazonaws.com:8080/mypage', { withCredentials: true }),
+          axios.get(import.meta.env.VITE_API_VALUE+'/mypage', { withCredentials: true }),
         ])
         if (cancelled) return
         setData(viewRes.data)

@@ -20,16 +20,16 @@ export class chatController{
 
     @Get("/chat")
     async chat_main(@Req() req:any){
-        if(!req.cookies.user){
+        if(!req.signedCookies.user){
             return { name: null };
         }
 
-        const name = await this.login_auth(req.cookies.user);
+        const name = await this.login_auth(req.signedCookies.user);
         if(name === '로그인 해주세요.'){
             return { name: null };
         }
 
-        const ret= await this.chatService.main_load(req.cookies.user);
+        const ret= await this.chatService.main_load(req.signedCookies.user);
         if(ret === null){
             return { name: null };
         }
@@ -39,7 +39,7 @@ export class chatController{
 
     @Get("/chat/:room_id")
     async chat_room(@Req() req:any,@Param("room_id") room_id:string){
-        if(!req.cookies.user){
+        if(!req.signedCookies.user){
             return { name: null };
         }
     }

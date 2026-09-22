@@ -11,7 +11,7 @@ export class SessionStatusMiddleware implements NestMiddleware {
     ) {}
 
     async use(req: Request, res: Response, next: NextFunction) {
-        const userId = (req as any).cookies?.user;
+        const userId = (req as any).signedCookies?.user;
 
         if (!userId || !Types.ObjectId.isValid(userId)) {
             return next();
@@ -48,9 +48,9 @@ export class SessionStatusMiddleware implements NestMiddleware {
     }
 
     private forceLogout(req: Request, res: Response) {
-        res.clearCookie('user', { httpOnly: true, path: '/' });
-        if ((req as any).cookies) {
-            (req as any).cookies.user = undefined;
+        res.clearCookie('user', { path: '/' });
+        if ((req as any).signedCookies) {
+            (req as any).signedCookies.user = undefined;
         }
     }
 }

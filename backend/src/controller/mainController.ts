@@ -1,14 +1,15 @@
-import { Controller,Get,Post,Req,Res,Body,Param } from "@nestjs/common";
+import { Controller,Get,Post,Req,Res,Body,Param,UseGuards } from "@nestjs/common";
+import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { authService } from "../service/auth";
 import { socketService } from "src/service/socket";
-import cookieParser from "cookie-parser";
-import { Request } from 'express';
-import { ObjectId } from "mongoose";
-import { stringify } from "querystring";
 
 
-
-
+const AUTH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  path: "/",
+  sameSite: "lax" as const,
+  secure: process.env.NODE_ENV === "production",
+};
 
 @Controller()
 export class mainController{
@@ -25,37 +26,35 @@ constructor(
 
     @Get("home")
     async home(@Req() req: any){
-      console.log(req.cookies.user);
-      if (!req.cookies.user) {
+      if (!req.signedCookies.user) {
         return { name: null };
       }
-    
-      const name = await this.authService.login_Load(req.cookies.user);
-      const role = await this.authService.role_Load(req.cookies.user);
-      console.log('loaded name:', name);
+
+      const name = await this.authService.login_Load(req.signedCookies.user);
+      const role = await this.authService.role_Load(req.signedCookies.user);
 
       return { name: name, role: role };
-        
-       
+
+
     }
 
     @Get("/mypage")
     async mypage(@Req() req: any){
-      if (!req.cookies.user) {
+      if (!req.signedCookies.user) {
         return { user: null };
       }
 
-      const user = await this.authService.mypage_Load(req.cookies.user);
+      const user = await this.authService.mypage_Load(req.signedCookies.user);
       return { user: user };
     }
 
     @Post("/mypage/bio")
     async updateBio(@Req() req: any, @Body("bio") bio: string){
-      if (!req.cookies.user) {
+      if (!req.signedCookies.user) {
         return { success: false, message: '로그인이 필요합니다.' };
       }
 
-      const user = await this.authService.updateBio(req.cookies.user, bio ?? '');
+      const user = await this.authService.updateBio(req.signedCookies.user, bio ?? '');
       return { success: true, user: user };
     }
 
@@ -67,30 +66,17 @@ constructor(
 
     @Get("/logout")
     async logout(@Req() req:any,@Res() res : any){
+      res.clearCookie('user', { path: '/' });
 
-
-      req.session.destroy((err) => {
-        if (err) {
-          return res.status(500).json({
-            success: false,
-            message: '로그아웃 실패',
-          });
-        }
-      
-        res.clearCookie('user', { httpOnly: true,path: '/' });
-        res.clearCookie('name', {  httpOnly: true,path: '/' });
-      
-        // 세션 쿠키까지 제거
-        res.clearCookie('connect.sid', { httpOnly: true,path: '/' });
-      
-        return res.json({
-          success: true,
-          message: '로그아웃 완료',
-        });
+      return res.json({
+        success: true,
+        message: '로그아웃 완료',
       });
     }
 
     @Post("/singup_ok")
+    @UseGuards(ThrottlerGuard)
+    @Throttle({ default: { limit: 5, ttl: 60000 } })
     async singup(@Body() body){
       const name = body.name;
       const id = body.id;
@@ -104,47 +90,44 @@ constructor(
           password:password,
          password_check:password_check
     };
-    return await this.authService.singup_ok(data);    
+    return await this.authService.singup_ok(data);
     }
 
 
     @Post("/login_ok")
+    @UseGuards(ThrottlerGuard)
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     async login(@Req() req:any,@Res() res:any){
 
       const id = req.body.id;
       const password = req.body.password;
 const pw_Check = await this.authService.pw_Check({id,password});
 try{
-   
+
 
             if(pw_Check.is_password) {
-         
-            req.session.user = pw_Check.user;
-            console.log(req.session.name)
-            res.cookie('user', pw_Check.user,{
-            
-                httpOnly:true,
-                 path:"/",
-                /* sameSite: 'lax',
-secure: false*/
+
+            res.cookie('user', pw_Check.user, {
+                ...AUTH_COOKIE_OPTIONS,
+                signed: true,
             });
 
-         
+
 
             res.json(pw_Check.res);
             }else{
                  res.json(pw_Check.res);
             }
-        
+
 
 }catch(error){
   res.json({success: false, message: "로그인 실패"});
     console.log(error);
-}     
+}
 
     }
 
 
-   
+
 
 }

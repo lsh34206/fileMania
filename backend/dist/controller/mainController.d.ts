@@ -32,7 +32,7 @@ export declare class mainController {
     profile(name: string): Promise<{
         user: any;
     }>;
-    logout(req: any, res: any): Promise<void>;
+    logout(req: any, res: any): Promise<any>;
     singup(body: any): Promise<{
         success: boolean;
         message: string;

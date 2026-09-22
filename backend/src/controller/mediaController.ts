@@ -13,7 +13,7 @@ export class mediaController {
         @Param("id") id: string,
         @Res() res: Response,
     ) {
-        const result = await this.downloadService.serve_file(type, id, req.cookies.user);
+        const result = await this.downloadService.serve_file(type, id, req.signedCookies.user);
 
         if (!result.success || !result.path) {
             return res.status((result as any).status ?? 404).json(result);

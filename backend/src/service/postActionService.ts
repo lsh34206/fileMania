@@ -3,6 +3,7 @@ import {Model, Types} from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { DateUtils } from 'src/utils/dateUtils';
 import { xpService } from 'src/service/xpService';
+import { logService } from 'src/service/logService';
 
 @Injectable()
 export class postActionService {
@@ -10,6 +11,7 @@ export class postActionService {
   private modelMap: Record<string, Model<any>>;
   constructor(
    private readonly xpService: xpService,
+   private readonly logService: logService,
 
    @InjectModel('users')
    private readonly userModel: Model<any>,
@@ -142,6 +144,8 @@ export class postActionService {
       const ret = await collection.updateOne({_id:new Types.ObjectId(postId)},{$set:{comment:comment_list}});
 
       await this.xpService.addXp(writer, 1);
+
+      await this.logService.write('comment_write', `${writer_name}님이 게시글에 댓글을 작성했습니다.`, writer, writer_name, { post_id: postId });
 
       return {success:true,message:"댓글 작성 완료",ret:ret};
     }catch(error){

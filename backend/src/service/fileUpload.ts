@@ -1,9 +1,12 @@
-  import { Injectable, NotFoundException } from '@nestjs/common';
+  import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
   import { ObjectId } from 'mongodb';
   import { DateUtils } from '../utils/dateUtils';
   import {Model, Types} from "mongoose";
   import { InjectModel } from "@nestjs/mongoose";
   import { xpService } from "src/service/xpService";
+  import { logService } from "src/service/logService";
+
+  const ALLOWED_TYPES = ['image', 'audio', 'video', 'app', 'document'];
 
   @Injectable()
   export class UploadService {
@@ -11,6 +14,7 @@
     private modelMap: Record<string, Model<any>>;
     constructor(
      private readonly xpService: xpService,
+     private readonly logService: logService,
 
      @InjectModel('users')
      private readonly userModel: Model<any>,
@@ -76,6 +80,13 @@
     userId: string;
     type: string;
   }) {
+    if (!ALLOWED_TYPES.includes(data.type)) {
+      throw new BadRequestException('잘못된 파일 종류입니다.');
+    }
+    if (!userId || !Types.ObjectId.isValid(userId)) {
+      throw new NotFoundException('유저 없음');
+    }
+
     const usersCollection = this.modelMap["users"];
 
     const uploaderUser = await usersCollection?.findOne({
@@ -128,6 +139,8 @@ if(data.download_type==='gym'){
 }
 
     await this.xpService.addXp(userId, 3);
+
+    await this.logService.write('file_upload', `${uploaderUser.name}님이 "${data.title}" 파일을 업로드했습니다. (${data.download_type})`, userId, uploaderUser.name, { file_id: result._id?.toString(), file_type: data.type });
 
     return {
       success: true,

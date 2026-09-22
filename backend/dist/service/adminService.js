@@ -17,11 +17,14 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const socket_1 = require("./socket");
+const logService_1 = require("./logService");
 let adminService = class adminService {
     socketService;
+    logService;
     userModel;
-    constructor(socketService, userModel) {
+    constructor(socketService, logService, userModel) {
         this.socketService = socketService;
+        this.logService = logService;
         this.userModel = userModel;
     }
     async requireAdmin(userId) {
@@ -102,12 +105,21 @@ let adminService = class adminService {
         await this.userModel.updateOne({ _id: target._id }, { $set: { status: 'active', suspended_until: null, suspend_reason: '', ban_reason: '' } });
         return { success: true, message: `${target.name}님의 제재를 해제했습니다.` };
     }
+    async listLogs(adminId, type, keyword) {
+        const admin = await this.requireAdmin(adminId);
+        if (!admin) {
+            return { success: false, message: '관리자 권한이 필요합니다.' };
+        }
+        const logs = await this.logService.list(type, keyword);
+        return { success: true, logs };
+    }
 };
 exports.adminService = adminService;
 exports.adminService = adminService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, mongoose_2.InjectModel)('users')),
+    __param(2, (0, mongoose_2.InjectModel)('users')),
     __metadata("design:paramtypes", [socket_1.socketService,
+        logService_1.logService,
         mongoose_1.Model])
 ], adminService);
 //# sourceMappingURL=adminService.js.map

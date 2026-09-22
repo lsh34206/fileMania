@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { LevelUtils } from '../../../backend/src/utils/levelUtils'
 import '../App.css'
+import StatsBanner from './statsBanner'
 
 function Profile() {
     const pathParts = window.location.pathname.split('/').filter((item) => item !== '')
@@ -51,6 +52,8 @@ function Profile() {
     return (
         <div className='page'>
             <h1 className='page-title'>{user.name}님의 프로필</h1>
+
+            <StatsBanner />
 
             <div className='card level-card' style={{ marginBottom: 16 }}>
                 <div className='level-head'>

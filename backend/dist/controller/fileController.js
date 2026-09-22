@@ -53,90 +53,32 @@ const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const fs_1 = __importDefault(require("fs"));
 const multer_1 = require("multer");
-const multer_2 = __importDefault(require("multer"));
 const path = __importStar(require("path"));
+const crypto = __importStar(require("crypto"));
 const fileUpload_1 = require("../service/fileUpload");
-const imagePath = path.join(process.cwd(), 'files', 'image');
-const videoPath = path.join(process.cwd(), 'files', 'video');
-const audioPath = path.join(process.cwd(), 'files', 'audio');
-const documentPath = path.join(process.cwd(), 'files', 'document');
-const appPath = path.join(process.cwd(), 'files', 'app');
-if (!fs_1.default.existsSync(imagePath)) {
-    fs_1.default.mkdirSync(imagePath, { recursive: true });
-}
-if (!fs_1.default.existsSync(videoPath)) {
-    fs_1.default.mkdirSync(videoPath, { recursive: true });
-}
-if (!fs_1.default.existsSync(audioPath)) {
-    fs_1.default.mkdirSync(audioPath, { recursive: true });
-}
-if (!fs_1.default.existsSync(documentPath)) {
-    fs_1.default.mkdirSync(documentPath, { recursive: true });
-}
-if (!fs_1.default.existsSync(appPath)) {
-    fs_1.default.mkdirSync(appPath, { recursive: true });
-}
-const image_storage = multer_2.default.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, imagePath);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
+const ALLOWED_TYPES = ['image', 'video', 'audio', 'document', 'app'];
+for (const type of ALLOWED_TYPES) {
+    const dir = path.join(process.cwd(), 'files', type);
+    if (!fs_1.default.existsSync(dir)) {
+        fs_1.default.mkdirSync(dir, { recursive: true });
     }
-});
-const video_storage = multer_2.default.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, videoPath);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-});
-const audio_storage = multer_2.default.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, audioPath);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-});
-const document_storage = multer_2.default.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, documentPath);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-});
-const app_storage = multer_2.default.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, appPath);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-});
-var upload_path = null;
-const uploadByType = {
-    image: (0, multer_2.default)({ storage: image_storage }).single('file'),
-    video: (0, multer_2.default)({ storage: video_storage }).single('file'),
-    audio: (0, multer_2.default)({ storage: audio_storage }).single('file'),
-    document: (0, multer_2.default)({ storage: document_storage }).single('file'),
-    app: (0, multer_2.default)({ storage: app_storage }).single('file'),
-};
+}
 let fileController = class fileController {
     uploadService;
     constructor(uploadService) {
         this.uploadService = uploadService;
     }
     async upload(type, file, rawData, req) {
+        if (!ALLOWED_TYPES.includes(type)) {
+            return { success: false, message: '잘못된 파일 종류입니다.' };
+        }
         const data = rawData
             ? JSON.parse(rawData)
             : { type, title: '', description: '', download_type: 'free' };
         const res = this.uploadService.uploadFile({
             file,
             data,
-            userId: req.cookies.user,
+            userId: req.signedCookies.user,
             type,
         });
         return res;
@@ -145,12 +87,17 @@ let fileController = class fileController {
 exports.fileController = fileController;
 __decorate([
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)("file", {
+        limits: { fileSize: 500 * 1024 * 1024 },
         storage: (0, multer_1.diskStorage)({
             destination: (req, file, cb) => {
+                if (!ALLOWED_TYPES.includes(req.params.type)) {
+                    return cb(new common_1.BadRequestException('잘못된 파일 종류입니다.'), '');
+                }
                 cb(null, path.join(process.cwd(), 'files', req.params.type));
             },
             filename: (req, file, cb) => {
-                cb(null, `${Date.now()}-${file.originalname}`);
+                const ext = path.extname(file.originalname).replace(/[^a-zA-Z0-9.]/g, '').slice(0, 20);
+                cb(null, `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext}`);
             },
         }),
     })),

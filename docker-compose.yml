@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      MONGO_URI: ${MONGO_URI}
+      TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
+      FRONTEND_URI_VALUE: ${PUBLIC_ORIGIN}
+      BACKEND_URI_VALUE: ${PUBLIC_ORIGIN}/api
+    volumes:
+      - backend_files:/app/files
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_VALUE: ${PUBLIC_ORIGIN}/api
+        VITE_BACKEND_URI_VALUE: ${PUBLIC_ORIGIN}/api
+        VITE_SOCKETIO_URI_VALUE: ${PUBLIC_ORIGIN}
+        VITE_TOSS_CLIENT_KEY: ${VITE_TOSS_CLIENT_KEY}
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+
+volumes:
+  backend_files:

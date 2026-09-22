@@ -8,6 +8,20 @@ const STATUS_LABEL = {
     banned: '차단',
 }
 
+const LOG_TYPES = [
+    { value: 'all', label: '전체' },
+    { value: 'login', label: '접속' },
+    { value: 'auction', label: '경매활동' },
+    { value: 'post_write', label: '게시글 작성' },
+    { value: 'file_upload', label: '파일 업로드' },
+    { value: 'comment_write', label: '댓글작성' },
+    { value: 'post_view', label: '게시글 조회' },
+    { value: 'file_download', label: '파일 다운로드' },
+    { value: 'charge', label: '충전' },
+]
+
+const LOG_TYPE_LABEL = Object.fromEntries(LOG_TYPES.map((t) => [t.value, t.label]))
+
 function formatDate(date) {
     if (!date) return '-'
     const d = new Date(date)
@@ -21,6 +35,13 @@ function AdminPage() {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+
+    const [logs, setLogs] = useState([])
+    const [logsLoading, setLogsLoading] = useState(true)
+    const [logsError, setLogsError] = useState(null)
+    const [logType, setLogType] = useState('all')
+    const [keywordInput, setKeywordInput] = useState('')
+    const [keyword, setKeyword] = useState('')
 
     useEffect(() => {
         let cancelled = false
@@ -59,6 +80,36 @@ function AdminPage() {
     useEffect(() => {
         if (isAdmin) fetchUsers()
     }, [isAdmin])
+
+    const fetchLogs = async () => {
+        setLogsLoading(true)
+        setLogsError(null)
+        try {
+            const res = await axios.get(import.meta.env.VITE_API_VALUE + '/admin/logs', {
+                params: { type: logType, keyword },
+                withCredentials: true,
+            })
+            if (res.data.success) {
+                setLogs(res.data.logs ?? [])
+            } else {
+                setLogsError(res.data.message || '로그를 불러오지 못했습니다.')
+            }
+        } catch (err) {
+            setLogsError('로그를 불러오지 못했습니다.')
+            console.log(err)
+        } finally {
+            setLogsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        if (isAdmin) fetchLogs()
+    }, [isAdmin, logType, keyword])
+
+    const searchLogs = (e) => {
+        e.preventDefault()
+        setKeyword(keywordInput.trim())
+    }
 
     const suspend = async (user) => {
         const daysInput = window.prompt(`${user.name}님을 몇 일간 정지할까요? (숫자만 입력)`, '7')
@@ -191,6 +242,77 @@ function AdminPage() {
                                                 <a className='file-edit' onClick={() => restore(u)}>해제</a>
                                             )}
                                         </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+
+            <div className='card' style={{ marginTop: 16 }}>
+                <h2>시스템 로그</h2>
+
+                <div className='tabs'>
+                    {LOG_TYPES.map((t) => (
+                        <button
+                            key={t.value}
+                            className={`tab${logType === t.value ? ' tab-active' : ''}`}
+                            onClick={() => setLogType(t.value)}
+                        >
+                            {t.label}
+                        </button>
+                    ))}
+                </div>
+
+                <form onSubmit={searchLogs} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                    <input
+                        className='field'
+                        type='text'
+                        placeholder='내용 또는 사용자로 검색'
+                        value={keywordInput}
+                        onChange={(e) => setKeywordInput(e.target.value)}
+                    />
+                    <button className='btn btn-primary' type='submit'>검색</button>
+                    {keyword && (
+                        <button
+                            type='button'
+                            className='btn'
+                            onClick={() => { setKeywordInput(''); setKeyword('') }}
+                        >
+                            초기화
+                        </button>
+                    )}
+                </form>
+
+                {logsLoading && <div className='state'>로딩 중...</div>}
+                {logsError && <div className='state state-error'>{logsError}</div>}
+
+                {!logsLoading && !logsError && (
+                    <div style={{ overflowX: 'auto' }}>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>시간</th>
+                                    <th>유형</th>
+                                    <th>내용</th>
+                                    <th>사용자</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {logs.length === 0 && (
+                                    <tr>
+                                        <td colSpan={4}>
+                                            <div className='state'>로그가 없습니다.</div>
+                                        </td>
+                                    </tr>
+                                )}
+                                {logs.map((log) => (
+                                    <tr key={log._id}>
+                                        <td style={{ whiteSpace: 'nowrap' }}>{formatDate(log.createdAt)}</td>
+                                        <td style={{ whiteSpace: 'nowrap' }}>{LOG_TYPE_LABEL[log.type] ?? log.type}</td>
+                                        <td>{log.message}</td>
+                                        <td>{log.user_name || '-'}</td>
                                     </tr>
                                 ))}
                             </tbody>

@@ -46,6 +46,11 @@ export declare class viewController {
         post: any;
         kind: string | null;
     }>;
+    home_stats(): Promise<{
+        userCount: number;
+        postCount: number;
+        fileCount: number;
+    }>;
     commuity_list_view(type: string, req: any, keyword: string, sort: string): Promise<{
         name: any;
         posts: any[] | undefined;

@@ -14,8 +14,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mainController = void 0;
 const common_1 = require("@nestjs/common");
+const throttler_1 = require("@nestjs/throttler");
 const auth_1 = require("../service/auth");
 const socket_1 = require("../service/socket");
+const AUTH_COOKIE_OPTIONS = {
+    httpOnly: true,
+    path: "/",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+};
 let mainController = class mainController {
     authService;
     socketService;
@@ -28,27 +35,25 @@ let mainController = class mainController {
         return { users: users };
     }
     async home(req) {
-        console.log(req.cookies.user);
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { name: null };
         }
-        const name = await this.authService.login_Load(req.cookies.user);
-        const role = await this.authService.role_Load(req.cookies.user);
-        console.log('loaded name:', name);
+        const name = await this.authService.login_Load(req.signedCookies.user);
+        const role = await this.authService.role_Load(req.signedCookies.user);
         return { name: name, role: role };
     }
     async mypage(req) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { user: null };
         }
-        const user = await this.authService.mypage_Load(req.cookies.user);
+        const user = await this.authService.mypage_Load(req.signedCookies.user);
         return { user: user };
     }
     async updateBio(req, bio) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인이 필요합니다.' };
         }
-        const user = await this.authService.updateBio(req.cookies.user, bio ?? '');
+        const user = await this.authService.updateBio(req.signedCookies.user, bio ?? '');
         return { success: true, user: user };
     }
     async profile(name) {
@@ -56,20 +61,10 @@ let mainController = class mainController {
         return { user: user };
     }
     async logout(req, res) {
-        req.session.destroy((err) => {
-            if (err) {
-                return res.status(500).json({
-                    success: false,
-                    message: '로그아웃 실패',
-                });
-            }
-            res.clearCookie('user', { httpOnly: true, path: '/' });
-            res.clearCookie('name', { httpOnly: true, path: '/' });
-            res.clearCookie('connect.sid', { httpOnly: true, path: '/' });
-            return res.json({
-                success: true,
-                message: '로그아웃 완료',
-            });
+        res.clearCookie('user', { path: '/' });
+        return res.json({
+            success: true,
+            message: '로그아웃 완료',
         });
     }
     async singup(body) {
@@ -93,11 +88,9 @@ let mainController = class mainController {
         const pw_Check = await this.authService.pw_Check({ id, password });
         try {
             if (pw_Check.is_password) {
-                req.session.user = pw_Check.user;
-                console.log(req.session.name);
                 res.cookie('user', pw_Check.user, {
-                    httpOnly: true,
-                    path: "/",
+                    ...AUTH_COOKIE_OPTIONS,
+                    signed: true,
                 });
                 res.json(pw_Check.res);
             }
@@ -157,6 +150,8 @@ __decorate([
 ], mainController.prototype, "logout", null);
 __decorate([
     (0, common_1.Post)("/singup_ok"),
+    (0, common_1.UseGuards)(throttler_1.ThrottlerGuard),
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60000 } }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -164,6 +159,8 @@ __decorate([
 ], mainController.prototype, "singup", null);
 __decorate([
     (0, common_1.Post)("/login_ok"),
+    (0, common_1.UseGuards)(throttler_1.ThrottlerGuard),
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 60000 } }),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),

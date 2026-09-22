@@ -21,16 +21,16 @@ let paymentController = class paymentController {
         this.paymentService = paymentService;
     }
     async createOrder(req, body) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
-        return await this.paymentService.createOrder(req.cookies.user, Number(body.amount));
+        return await this.paymentService.createOrder(req.signedCookies.user, Number(body.amount));
     }
     async confirm(req, body) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
-        return await this.paymentService.confirmPayment(req.cookies.user, body.paymentKey, body.orderId, Number(body.amount));
+        return await this.paymentService.confirmPayment(req.signedCookies.user, body.paymentKey, body.orderId, Number(body.amount));
     }
 };
 exports.paymentController = paymentController;

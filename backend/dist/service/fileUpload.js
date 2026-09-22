@@ -17,8 +17,11 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const xpService_1 = require("./xpService");
+const logService_1 = require("./logService");
+const ALLOWED_TYPES = ['image', 'audio', 'video', 'app', 'document'];
 let UploadService = class UploadService {
     xpService;
+    logService;
     userModel;
     imageModel;
     audioModel;
@@ -30,8 +33,9 @@ let UploadService = class UploadService {
     gymBidsModel;
     gymChatsModel;
     modelMap;
-    constructor(xpService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel) {
+    constructor(xpService, logService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel) {
         this.xpService = xpService;
+        this.logService = logService;
         this.userModel = userModel;
         this.imageModel = imageModel;
         this.audioModel = audioModel;
@@ -56,6 +60,12 @@ let UploadService = class UploadService {
         };
     }
     async uploadFile({ file, data, userId, type, }) {
+        if (!ALLOWED_TYPES.includes(data.type)) {
+            throw new common_1.BadRequestException('잘못된 파일 종류입니다.');
+        }
+        if (!userId || !mongoose_1.Types.ObjectId.isValid(userId)) {
+            throw new common_1.NotFoundException('유저 없음');
+        }
         const usersCollection = this.modelMap["users"];
         const uploaderUser = await usersCollection?.findOne({
             _id: new mongoose_1.Types.ObjectId(userId),
@@ -96,6 +106,7 @@ let UploadService = class UploadService {
             });
         }
         await this.xpService.addXp(userId, 3);
+        await this.logService.write('file_upload', `${uploaderUser.name}님이 "${data.title}" 파일을 업로드했습니다. (${data.download_type})`, userId, uploaderUser.name, { file_id: result._id?.toString(), file_type: data.type });
         return {
             success: true,
             message: '파일 업로드 완료',
@@ -105,17 +116,18 @@ let UploadService = class UploadService {
 exports.UploadService = UploadService;
 exports.UploadService = UploadService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, mongoose_2.InjectModel)('users')),
-    __param(2, (0, mongoose_2.InjectModel)('image')),
-    __param(3, (0, mongoose_2.InjectModel)('audio')),
-    __param(4, (0, mongoose_2.InjectModel)('video')),
-    __param(5, (0, mongoose_2.InjectModel)('app')),
-    __param(6, (0, mongoose_2.InjectModel)('document')),
-    __param(7, (0, mongoose_2.InjectModel)('gyms')),
-    __param(8, (0, mongoose_2.InjectModel)('gymResults')),
-    __param(9, (0, mongoose_2.InjectModel)('gymBids')),
-    __param(10, (0, mongoose_2.InjectModel)('gymChats')),
+    __param(2, (0, mongoose_2.InjectModel)('users')),
+    __param(3, (0, mongoose_2.InjectModel)('image')),
+    __param(4, (0, mongoose_2.InjectModel)('audio')),
+    __param(5, (0, mongoose_2.InjectModel)('video')),
+    __param(6, (0, mongoose_2.InjectModel)('app')),
+    __param(7, (0, mongoose_2.InjectModel)('document')),
+    __param(8, (0, mongoose_2.InjectModel)('gyms')),
+    __param(9, (0, mongoose_2.InjectModel)('gymResults')),
+    __param(10, (0, mongoose_2.InjectModel)('gymBids')),
+    __param(11, (0, mongoose_2.InjectModel)('gymChats')),
     __metadata("design:paramtypes", [xpService_1.xpService,
+        logService_1.logService,
         mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,

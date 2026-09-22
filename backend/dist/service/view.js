@@ -16,7 +16,9 @@ exports.ViewService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
+const logService_1 = require("./logService");
 let ViewService = class ViewService {
+    logService;
     userModel;
     imageModel;
     audioModel;
@@ -30,7 +32,8 @@ let ViewService = class ViewService {
     community;
     purchaseModel;
     modelMap;
-    constructor(userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel, community, purchaseModel) {
+    constructor(logService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel, community, purchaseModel) {
+        this.logService = logService;
         this.userModel = userModel;
         this.imageModel = imageModel;
         this.audioModel = audioModel;
@@ -142,6 +145,8 @@ let ViewService = class ViewService {
             const update = await collection.updateOne({ _id: new mongoose_1.Types.ObjectId(id), category: type }, { $inc: { view_count: 1 } });
             const post_writer_is_me = await this.community_post_writer_is_me(viewer, id, type);
             const is_admin = await this.is_admin(viewer);
+            const viewerName = viewer ? name : '비회원';
+            await this.logService.write('post_view', `${viewerName}님이 "${post?.title ?? ''}" 게시글을 조회했습니다.`, viewer, viewer ? name : '', { post_id: id, category: type });
             return { post: post, name: name, writer_is_me: post_writer_is_me, is_admin: is_admin, message: "불러오기 성공" };
         }
         catch (error) {
@@ -164,19 +169,20 @@ let ViewService = class ViewService {
 exports.ViewService = ViewService;
 exports.ViewService = ViewService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_2.InjectModel)('users')),
-    __param(1, (0, mongoose_2.InjectModel)('image')),
-    __param(2, (0, mongoose_2.InjectModel)('audio')),
-    __param(3, (0, mongoose_2.InjectModel)('video')),
-    __param(4, (0, mongoose_2.InjectModel)('app')),
-    __param(5, (0, mongoose_2.InjectModel)('document')),
-    __param(6, (0, mongoose_2.InjectModel)('gyms')),
-    __param(7, (0, mongoose_2.InjectModel)('gymResults')),
-    __param(8, (0, mongoose_2.InjectModel)('gymBids')),
-    __param(9, (0, mongoose_2.InjectModel)('gymChats')),
-    __param(10, (0, mongoose_2.InjectModel)('community')),
-    __param(11, (0, mongoose_2.InjectModel)('purchases')),
-    __metadata("design:paramtypes", [mongoose_1.Model,
+    __param(1, (0, mongoose_2.InjectModel)('users')),
+    __param(2, (0, mongoose_2.InjectModel)('image')),
+    __param(3, (0, mongoose_2.InjectModel)('audio')),
+    __param(4, (0, mongoose_2.InjectModel)('video')),
+    __param(5, (0, mongoose_2.InjectModel)('app')),
+    __param(6, (0, mongoose_2.InjectModel)('document')),
+    __param(7, (0, mongoose_2.InjectModel)('gyms')),
+    __param(8, (0, mongoose_2.InjectModel)('gymResults')),
+    __param(9, (0, mongoose_2.InjectModel)('gymBids')),
+    __param(10, (0, mongoose_2.InjectModel)('gymChats')),
+    __param(11, (0, mongoose_2.InjectModel)('community')),
+    __param(12, (0, mongoose_2.InjectModel)('purchases')),
+    __metadata("design:paramtypes", [logService_1.logService,
+        mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,

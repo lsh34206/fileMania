@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { LevelUtils } from '../../../backend/src/utils/levelUtils'
 import '../App.css'
+import StatsBanner from './statsBanner'
 
 const TAB_BY_PATH = { myInfo: 'info', payManage: 'point', susin: 'mail' }
 
@@ -106,6 +107,8 @@ function MyPage() {
     return (
         <div className='page'>
             <h1 className='page-title'>마이페이지</h1>
+
+            <StatsBanner />
 
             <div className='tabs'>
                 <button className='tab' onClick={() => setTab('info')}>내 정보</button>

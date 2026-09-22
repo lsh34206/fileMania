@@ -18,13 +18,16 @@ const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const dateUtils_1 = require("../utils/dateUtils");
 const xpService_1 = require("./xpService");
+const logService_1 = require("./logService");
 let postActionService = class postActionService {
     xpService;
+    logService;
     userModel;
     community;
     modelMap;
-    constructor(xpService, userModel, community) {
+    constructor(xpService, logService, userModel, community) {
         this.xpService = xpService;
+        this.logService = logService;
         this.userModel = userModel;
         this.community = community;
         this.modelMap = {
@@ -139,6 +142,7 @@ let postActionService = class postActionService {
             }
             const ret = await collection.updateOne({ _id: new mongoose_1.Types.ObjectId(postId) }, { $set: { comment: comment_list } });
             await this.xpService.addXp(writer, 1);
+            await this.logService.write('comment_write', `${writer_name}님이 게시글에 댓글을 작성했습니다.`, writer, writer_name, { post_id: postId });
             return { success: true, message: "댓글 작성 완료", ret: ret };
         }
         catch (error) {
@@ -204,9 +208,10 @@ let postActionService = class postActionService {
 exports.postActionService = postActionService;
 exports.postActionService = postActionService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, mongoose_2.InjectModel)('users')),
-    __param(2, (0, mongoose_2.InjectModel)('community')),
+    __param(2, (0, mongoose_2.InjectModel)('users')),
+    __param(3, (0, mongoose_2.InjectModel)('community')),
     __metadata("design:paramtypes", [xpService_1.xpService,
+        logService_1.logService,
         mongoose_1.Model,
         mongoose_1.Model])
 ], postActionService);

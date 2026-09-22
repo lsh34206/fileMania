@@ -175,6 +175,20 @@ export const communitySchema = new Schema({
 });
 
 
+export const systemLogSchema = new Schema({
+    type: {
+        type: String,
+        required: true,
+        enum: ['login', 'auction', 'post_write', 'file_upload', 'comment_write', 'post_view', 'file_download', 'charge'],
+    },
+    message: { type: String, required: true },
+    user_id: { type: Schema.Types.ObjectId, default: null },
+    user_name: { type: String, default: '' },
+    meta: { type: Schema.Types.Mixed, default: {} },
+    createdAt: { type: Date, default: Date.now },
+});
+
+
 export const gymChatsSchema = new Schema({
   auction_id: {
     type: Schema.Types.ObjectId,

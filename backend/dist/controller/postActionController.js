@@ -39,14 +39,14 @@ let postActionController = class postActionController {
         }
     }
     async community_post_like(postId, req) {
-        const userId = req.cookies.user;
+        const userId = req.signedCookies.user;
         const name = await this.login_auth(userId);
         const ret = await this.postActionService.community_post_like(postId, userId);
         console.log(ret);
         return { like_count: ret.like_count, myId: userId, message: ret.message, name: name };
     }
     async community_comment_write(postId, req, content, parent_id) {
-        const userId = req.cookies.user;
+        const userId = req.signedCookies.user;
         if (!userId) {
             return { success: false, message: '로그인 해주세요.' };
         }
@@ -56,14 +56,14 @@ let postActionController = class postActionController {
         return { success: ret.success, message: ret.message, name: name, myId: userId };
     }
     async community_comment_like(postId, comment_id, req) {
-        const userId = req.cookies.user;
+        const userId = req.signedCookies.user;
         const name = await this.login_auth(userId);
         const ret = await this.postActionService.community_comment_like(postId, comment_id, userId);
         console.log(ret);
         return { success: ret.success, message: ret.message, name: name, myId: userId };
     }
     async community_comment_delete(postId, comment_id, type, req) {
-        const userId = req.cookies.user;
+        const userId = req.signedCookies.user;
         if (!userId) {
             return { success: false, message: '로그인 해주세요.' };
         }
@@ -73,7 +73,7 @@ let postActionController = class postActionController {
         return { success: ret.success, message: ret.message, name: name, myId: userId };
     }
     async community_post_delete(postId, type, req) {
-        const userId = req.cookies.user;
+        const userId = req.signedCookies.user;
         if (!userId) {
             return { success: false, message: '로그인 해주세요.' };
         }

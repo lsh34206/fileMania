@@ -11,6 +11,15 @@ export declare class adminController {
         users: any[];
         message?: undefined;
     }>;
+    listLogs(req: any, type: string, keyword: string): Promise<{
+        success: boolean;
+        message: string;
+        logs?: undefined;
+    } | {
+        success: boolean;
+        logs: any[];
+        message?: undefined;
+    }>;
     ban(req: any, id: string, reason: string): Promise<{
         success: boolean;
         message: string;

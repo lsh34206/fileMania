@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import '../App.css'
+import StatsBanner from './statsBanner'
 
 function Home() {
     const [post, setPost] = useState(null)
@@ -45,6 +46,8 @@ function Home() {
     return (
         <div className='page'>
             <h1 className='page-title'>파일매니아에 오신 것을 환영합니다</h1>
+
+            <StatsBanner />
 
             {loading && <div className='state'>로딩 중...</div>}
 

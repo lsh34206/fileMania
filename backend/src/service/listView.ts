@@ -180,6 +180,29 @@ async paid_view(type: string, name: string, keyword?: string) {
      }
   }
 
+  async home_stats(){
+    try{
+        const [userCount, postCount, imageCount, videoCount, audioCount, documentCount, appCount] = await Promise.all([
+            this.userModel.countDocuments({}),
+            this.community.countDocuments({}),
+            this.imageModel.countDocuments({}),
+            this.videoModel.countDocuments({}),
+            this.audioModel.countDocuments({}),
+            this.documentModel.countDocuments({}),
+            this.appModel.countDocuments({}),
+        ]);
+
+        return {
+            userCount,
+            postCount,
+            fileCount: imageCount + videoCount + audioCount + documentCount + appCount,
+        };
+    }catch(error){
+        console.log(error);
+        return { userCount: 0, postCount: 0, fileCount: 0 };
+    }
+  }
+
   async featured_post(){
     try{
         const collection = this.modelMap["community"];

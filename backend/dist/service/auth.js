@@ -50,9 +50,12 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const bcrypt = __importStar(require("bcrypt"));
+const logService_1 = require("./logService");
 let authService = class authService {
+    logService;
     userModel;
-    constructor(userModel) {
+    constructor(logService, userModel) {
+        this.logService = logService;
         this.userModel = userModel;
     }
     async login_Load(userid) {
@@ -64,7 +67,7 @@ let authService = class authService {
         return user?.role ?? null;
     }
     async mypage_Load(userid) {
-        const user = await this.userModel.findById(userid);
+        const user = await this.userModel.findById(userid).select('-password');
         return user ?? null;
     }
     async updateBio(userid, bio) {
@@ -126,6 +129,7 @@ let authService = class authService {
                 await collection.updateOne({ _id: search_user._id }, { $set: { status: 'active', suspended_until: null, suspend_reason: '' } });
             }
             const user = search_user._id.toString();
+            await this.logService.write('login', `${search_user.name}님이 로그인했습니다.`, user, search_user.name);
             return { is_password: is_password, user: user, res: send_json.suc };
         }
         catch (err) {
@@ -136,7 +140,8 @@ let authService = class authService {
 exports.authService = authService;
 exports.authService = authService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_2.InjectModel)("users")),
-    __metadata("design:paramtypes", [mongoose_1.Model])
+    __param(1, (0, mongoose_2.InjectModel)("users")),
+    __metadata("design:paramtypes", [logService_1.logService,
+        mongoose_1.Model])
 ], authService);
 //# sourceMappingURL=auth.js.map

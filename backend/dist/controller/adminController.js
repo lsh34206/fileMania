@@ -21,16 +21,19 @@ let adminController = class adminController {
         this.adminService = adminService;
     }
     async listUsers(req) {
-        return await this.adminService.listUsers(req.cookies.user);
+        return await this.adminService.listUsers(req.signedCookies.user);
+    }
+    async listLogs(req, type, keyword) {
+        return await this.adminService.listLogs(req.signedCookies.user, type, keyword);
     }
     async ban(req, id, reason) {
-        return await this.adminService.banUser(req.cookies.user, id, reason);
+        return await this.adminService.banUser(req.signedCookies.user, id, reason);
     }
     async suspend(req, id, days, reason) {
-        return await this.adminService.suspendUser(req.cookies.user, id, Number(days), reason);
+        return await this.adminService.suspendUser(req.signedCookies.user, id, Number(days), reason);
     }
     async restore(req, id) {
-        return await this.adminService.restoreUser(req.cookies.user, id);
+        return await this.adminService.restoreUser(req.signedCookies.user, id);
     }
 };
 exports.adminController = adminController;
@@ -41,6 +44,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], adminController.prototype, "listUsers", null);
+__decorate([
+    (0, common_1.Get)("logs"),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)("type")),
+    __param(2, (0, common_1.Query)("keyword")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", Promise)
+], adminController.prototype, "listLogs", null);
 __decorate([
     (0, common_1.Post)("users/:id/ban"),
     __param(0, (0, common_1.Req)()),

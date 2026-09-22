@@ -25,7 +25,7 @@ export class postActionController{
 
     @Post("/community/like/:postId")
     async community_post_like(@Param("postId") postId:string,@Req() req:any){
-      const userId = req.cookies.user;
+      const userId = req.signedCookies.user;
       const name = await this.login_auth(userId);
       const ret = await this.postActionService.community_post_like(postId,userId);
       console.log(ret);
@@ -34,7 +34,7 @@ export class postActionController{
 
     @Post("/community/comment/:postId")
     async community_comment_write(@Param("postId") postId:string,@Req() req:any,@Body("content") content:string,@Body("parent_id") parent_id:string){
-      const userId = req.cookies.user;
+      const userId = req.signedCookies.user;
       if(!userId){
         return {success:false,message:'로그인 해주세요.'};
       }
@@ -46,7 +46,7 @@ export class postActionController{
 
     @Post("/community/comment_like/:postId/:comment_id")
     async community_comment_like(@Param("postId") postId:string,@Param("comment_id") comment_id:string,@Req() req:any){
-      const userId = req.cookies.user;
+      const userId = req.signedCookies.user;
       const name = await this.login_auth(userId);
       const ret = await this.postActionService.community_comment_like(postId,comment_id,userId);
       console.log(ret);
@@ -55,7 +55,7 @@ export class postActionController{
 
     @Post("/community/comment_delete/:postId/:type/:comment_id")
     async community_comment_delete(@Param("postId") postId:string,@Param("comment_id") comment_id:string,@Param("type") type:string,@Req() req:any){
-      const userId = req.cookies.user;
+      const userId = req.signedCookies.user;
       if(!userId){
         return {success:false,message:'로그인 해주세요.'};
       }
@@ -67,7 +67,7 @@ export class postActionController{
 
      @Post("/community/post_delete/:postId/:type")
     async community_post_delete(@Param("postId") postId:string,@Param("type") type:string,@Req() req:any){
-      const userId = req.cookies.user;
+      const userId = req.signedCookies.user;
       if(!userId){
         return {success:false,message:'로그인 해주세요.'};
       }

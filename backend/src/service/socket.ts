@@ -13,6 +13,8 @@ import {
 import {Model, Types} from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { DateUtils } from 'src/utils/dateUtils';
+import { logService } from 'src/service/logService';
+import { unsignUserCookie } from 'src/utils/cookieAuth';
 
   @WebSocketGateway({
     cors: {
@@ -33,9 +35,11 @@ import { DateUtils } from 'src/utils/dateUtils';
     // socketId -> Set<gymId>
     private socketGymRooms: Map<string, Set<string>> = new Map();
     constructor(
+     private readonly logService: logService,
+
      @InjectModel('users')
      private readonly userModel: Model<any>,
-    
+
      @InjectModel('image')
      private readonly imageModel: Model<any>,
     
@@ -97,18 +101,7 @@ import { DateUtils } from 'src/utils/dateUtils';
     server: Server;
 
     private extractUserId(client: Socket): string | null {
-      const cookieHeader = client.handshake.headers.cookie;
-      if (!cookieHeader) {
-        return null;
-      }
-      const match = cookieHeader
-        .split(';')
-        .map((c) => c.trim())
-        .find((c) => c.startsWith('user='));
-      if (!match) {
-        return null;
-      }
-      return decodeURIComponent(match.split('=')[1]);
+      return unsignUserCookie(client.handshake.headers.cookie);
     }
 
     handleConnection(client: Socket) {
@@ -143,6 +136,18 @@ import { DateUtils } from 'src/utils/dateUtils';
         }
       }
       this.socketUsers.delete(client.id);
+    }
+
+    notifyGymEnded(
+      gymId: string,
+      payload: {
+        winner_id: string | null;
+        winner_name: string;
+        final_price: number;
+        title: string;
+      },
+    ) {
+      this.server.to(gymId).emit('gym_ended', payload);
     }
 
     forceLogout(userId: string, message: string) {
@@ -221,7 +226,7 @@ import { DateUtils } from 'src/utils/dateUtils';
     ) {
       client.join(data.gymId);
 
-      const userId = this.socketUsers.get(client.id) ?? data.userId;
+      const userId = this.socketUsers.get(client.id);
       if (userId) {
         this.addGymPresence(data.gymId, userId, client.id);
       }
@@ -241,9 +246,18 @@ import { DateUtils } from 'src/utils/dateUtils';
         userId: string;
         message: string;
       },
+      @ConnectedSocket() client: Socket,
     ) {
-      const user = await this.userModel.findById(data.userId);
-    
+      const userId = this.socketUsers.get(client.id);
+      if (!userId) {
+        return { success: false, message: '로그인이 필요합니다.' };
+      }
+
+      const user = await this.userModel.findById(userId);
+      if (!user) {
+        return { success: false, message: '로그인이 필요합니다.' };
+      }
+
       const chat = await this.gymChatsModel.insertOne({
         auction_id: data.gymId,
         sender_id: user._id,
@@ -265,7 +279,17 @@ async sendBid(
     userId: string;
     bidPrice: number;
   },
+  @ConnectedSocket() client: Socket,
 ) {
+  const userId = this.socketUsers.get(client.id);
+  if (!userId) {
+    return { success: false, message: '로그인이 필요합니다.' };
+  }
+
+  if (!Number.isFinite(data.bidPrice) || data.bidPrice <= 0) {
+    return { success: false, message: '입찰가가 올바르지 않음' };
+  }
+
   const gym = await this.gymsModel.findOne({file_id:data.gymId});
 
   if (!gym || gym.status !== 'active') {
@@ -280,7 +304,10 @@ async sendBid(
     return { success: false, message: '입찰가가 너무 낮음' };
   }
 
-  const user = await this.userModel.findById(data.userId);
+  const user = await this.userModel.findById(userId);
+  if (!user) {
+    return { success: false, message: '로그인이 필요합니다.' };
+  }
 
   await this.gymsModel.updateOne(
     { file_id: data.gymId },
@@ -321,6 +348,8 @@ async sendBid(
 
   this.server.to(data.gymId).emit('receive_chat', bidChat);
 
+  await this.logService.write('auction', `${user.name}님이 "${gym.title}" 경매에 ${data.bidPrice.toLocaleString()}원 입찰했습니다.`, user._id.toString(), user.name, { auction_id: data.gymId, bid_price: data.bidPrice });
+
   return { success: true };
 }
 
@@ -330,13 +359,18 @@ async sendBid(
       @MessageBody() data: { roomId: string; userId: string },
       @ConnectedSocket() client: Socket,
     ) {
+      const userId = this.socketUsers.get(client.id);
+      if (!userId) {
+        return { success: false, message: '로그인 해주세요.' };
+      }
+
       const room = await this.chatroomsModel.findById(data.roomId);
       if (!room) {
         return { success: false, message: '존재하지 않는 채팅방입니다.' };
       }
 
       const isParticipant = room.participants.some(
-        (p) => p.toString() === data.userId,
+        (p) => p.toString() === userId,
       );
       if (!isParticipant) {
         return { success: false, message: '참여중인 채팅방이 아닙니다.' };
@@ -354,7 +388,7 @@ async sendBid(
       }
 
       await this.messagesModel.updateMany(
-        { room_id: room._id, sender_id: { $ne: data.userId }, isRead: false },
+        { room_id: room._id, sender_id: { $ne: userId }, isRead: false },
         { $set: { isRead: true } },
       );
 
@@ -379,9 +413,15 @@ async sendBid(
     @SubscribeMessage('send_message')
     async sendMessage(
       @MessageBody() data: { roomId: string; userId: string; message: string },
+      @ConnectedSocket() client: Socket,
     ) {
       if (!data.message || !data.message.trim()) {
         return { success: false, message: '메시지를 입력해주세요.' };
+      }
+
+      const userId = this.socketUsers.get(client.id);
+      if (!userId) {
+        return { success: false, message: '로그인 해주세요.' };
       }
 
       const room = await this.chatroomsModel.findById(data.roomId);
@@ -389,7 +429,7 @@ async sendBid(
         return { success: false, message: '존재하지 않는 채팅방입니다.' };
       }
 
-      const user = await this.userModel.findById(data.userId);
+      const user = await this.userModel.findById(userId);
       if (!user) {
         return { success: false, message: '로그인 해주세요.' };
       }

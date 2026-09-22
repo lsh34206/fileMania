@@ -81,6 +81,11 @@ export declare class listViewService {
         name: string;
         list?: undefined;
     }>;
+    home_stats(): Promise<{
+        userCount: number;
+        postCount: number;
+        fileCount: number;
+    }>;
     featured_post(): Promise<{
         post: any;
         kind: string | null;

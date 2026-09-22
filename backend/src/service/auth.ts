@@ -7,6 +7,7 @@ import * as bcrypt from "bcrypt"
 import { resolve } from "path";
 import { rejects } from "assert";
 import { ObjectId } from "mongodb";
+import { logService } from "src/service/logService";
 
 
 type singup_data_type = {
@@ -24,6 +25,7 @@ type login_data_type = {
 @Injectable()
 export class authService{
    constructor(
+    private readonly logService: logService,
 
     @InjectModel("users")
     private readonly userModel:Model<any>
@@ -42,12 +44,12 @@ export class authService{
     }
 
     async mypage_Load(userid: string){
-        const user = await this.userModel.findById(userid);
+        const user = await this.userModel.findById(userid).select('-password');
         return user ?? null;
     }
 
     async updateBio(userid: string, bio: string){
-        const user = await this.userModel.findByIdAndUpdate(userid, { bio: bio }, { new: true });
+        const user = await this.userModel.findByIdAndUpdate(userid, { bio: bio }, { new: true }).select('-password');
         return user ?? null;
     }
 
@@ -122,6 +124,8 @@ export class authService{
         }
 
         const user = search_user._id.toString();
+
+        await this.logService.write('login', `${search_user.name}님이 로그인했습니다.`, user, search_user.name);
 
         return {is_password:is_password,user:user,res:send_json.suc};
 

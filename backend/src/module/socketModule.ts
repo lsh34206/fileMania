@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { socketService} from "src/service/socket";
+import { logService } from "src/service/logService";
 import { MongooseModule } from "@nestjs/mongoose";
 import {
   usersSchema,
@@ -10,6 +11,7 @@ import {
   gymChatsSchema,
   chatroomSchema,
   messageSchema,
+  systemLogSchema,
 } from "src/db/schema";
 
 @Module({
@@ -27,9 +29,10 @@ import {
       { name: "gymChats", schema: gymChatsSchema },
       { name: "chatrooms", schema: chatroomSchema },
       { name: "messages", schema: messageSchema },
+      { name: "systemLogs", schema: systemLogSchema },
     ]),
   ],
-    providers: [socketService],exports:[socketService]
+    providers: [socketService, logService],exports:[socketService, logService]
   })
 
 export class socketModule{

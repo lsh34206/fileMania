@@ -1,7 +1,9 @@
 import { Model } from "mongoose";
 import { xpService } from "./xpService";
+import { logService } from "./logService";
 export declare class writeManagerService {
     private readonly xpService;
+    private readonly logService;
     private readonly userModel;
     private readonly imageModel;
     private readonly audioModel;
@@ -14,7 +16,7 @@ export declare class writeManagerService {
     private readonly gymChatsModel;
     private readonly community;
     private modelMap;
-    constructor(xpService: xpService, userModel: Model<any>, imageModel: Model<any>, audioModel: Model<any>, videoModel: Model<any>, appModel: Model<any>, documentModel: Model<any>, gymsModel: Model<any>, gymResultsModel: Model<any>, gymBidsModel: Model<any>, gymChatsModel: Model<any>, community: Model<any>);
+    constructor(xpService: xpService, logService: logService, userModel: Model<any>, imageModel: Model<any>, audioModel: Model<any>, videoModel: Model<any>, appModel: Model<any>, documentModel: Model<any>, gymsModel: Model<any>, gymResultsModel: Model<any>, gymBidsModel: Model<any>, gymChatsModel: Model<any>, community: Model<any>);
     community_write_ok(writer_id: string, type: string, data: string): Promise<{
         success: boolean;
         message: any;

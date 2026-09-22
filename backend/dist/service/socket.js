@@ -19,7 +19,10 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const dateUtils_1 = require("../utils/dateUtils");
+const logService_1 = require("./logService");
+const cookieAuth_1 = require("../utils/cookieAuth");
 let socketService = class socketService {
+    logService;
     userModel;
     imageModel;
     audioModel;
@@ -37,7 +40,8 @@ let socketService = class socketService {
     socketUsers = new Map();
     gymRoomUsers = new Map();
     socketGymRooms = new Map();
-    constructor(userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel, chatroomsModel, messagesModel) {
+    constructor(logService, userModel, imageModel, audioModel, videoModel, appModel, documentModel, gymsModel, gymResultsModel, gymBidsModel, gymChatsModel, chatroomsModel, messagesModel) {
+        this.logService = logService;
         this.userModel = userModel;
         this.imageModel = imageModel;
         this.audioModel = audioModel;
@@ -67,18 +71,7 @@ let socketService = class socketService {
     }
     server;
     extractUserId(client) {
-        const cookieHeader = client.handshake.headers.cookie;
-        if (!cookieHeader) {
-            return null;
-        }
-        const match = cookieHeader
-            .split(';')
-            .map((c) => c.trim())
-            .find((c) => c.startsWith('user='));
-        if (!match) {
-            return null;
-        }
-        return decodeURIComponent(match.split('=')[1]);
+        return (0, cookieAuth_1.unsignUserCookie)(client.handshake.headers.cookie);
     }
     handleConnection(client) {
         const userId = this.extractUserId(client);
@@ -109,6 +102,9 @@ let socketService = class socketService {
             }
         }
         this.socketUsers.delete(client.id);
+    }
+    notifyGymEnded(gymId, payload) {
+        this.server.to(gymId).emit('gym_ended', payload);
     }
     forceLogout(userId, message) {
         const socketIds = this.userSockets.get(userId);
@@ -172,7 +168,7 @@ let socketService = class socketService {
     }
     async joinGymRoom(data, client) {
         client.join(data.gymId);
-        const userId = this.socketUsers.get(client.id) ?? data.userId;
+        const userId = this.socketUsers.get(client.id);
         if (userId) {
             this.addGymPresence(data.gymId, userId, client.id);
         }
@@ -182,8 +178,15 @@ let socketService = class socketService {
         });
         await this.broadcastGymRoomUsers(data.gymId);
     }
-    async sendChat(data) {
-        const user = await this.userModel.findById(data.userId);
+    async sendChat(data, client) {
+        const userId = this.socketUsers.get(client.id);
+        if (!userId) {
+            return { success: false, message: '로그인이 필요합니다.' };
+        }
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+            return { success: false, message: '로그인이 필요합니다.' };
+        }
         const chat = await this.gymChatsModel.insertOne({
             auction_id: data.gymId,
             sender_id: user._id,
@@ -194,7 +197,14 @@ let socketService = class socketService {
         });
         this.server.to(data.gymId).emit('receive_chat', chat);
     }
-    async sendBid(data) {
+    async sendBid(data, client) {
+        const userId = this.socketUsers.get(client.id);
+        if (!userId) {
+            return { success: false, message: '로그인이 필요합니다.' };
+        }
+        if (!Number.isFinite(data.bidPrice) || data.bidPrice <= 0) {
+            return { success: false, message: '입찰가가 올바르지 않음' };
+        }
         const gym = await this.gymsModel.findOne({ file_id: data.gymId });
         if (!gym || gym.status !== 'active') {
             return { success: false, message: '진행중인 경매가 아님' };
@@ -205,7 +215,10 @@ let socketService = class socketService {
         if (data.bidPrice < gym.current_price + gym.min_bid_unit) {
             return { success: false, message: '입찰가가 너무 낮음' };
         }
-        const user = await this.userModel.findById(data.userId);
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+            return { success: false, message: '로그인이 필요합니다.' };
+        }
         await this.gymsModel.updateOne({ file_id: data.gymId }, {
             $set: {
                 current_price: data.bidPrice,
@@ -237,14 +250,19 @@ let socketService = class socketService {
             highest_bidder_name: user.name,
         });
         this.server.to(data.gymId).emit('receive_chat', bidChat);
+        await this.logService.write('auction', `${user.name}님이 "${gym.title}" 경매에 ${data.bidPrice.toLocaleString()}원 입찰했습니다.`, user._id.toString(), user.name, { auction_id: data.gymId, bid_price: data.bidPrice });
         return { success: true };
     }
     async joinChatRoom(data, client) {
+        const userId = this.socketUsers.get(client.id);
+        if (!userId) {
+            return { success: false, message: '로그인 해주세요.' };
+        }
         const room = await this.chatroomsModel.findById(data.roomId);
         if (!room) {
             return { success: false, message: '존재하지 않는 채팅방입니다.' };
         }
-        const isParticipant = room.participants.some((p) => p.toString() === data.userId);
+        const isParticipant = room.participants.some((p) => p.toString() === userId);
         if (!isParticipant) {
             return { success: false, message: '참여중인 채팅방이 아닙니다.' };
         }
@@ -256,7 +274,7 @@ let socketService = class socketService {
         for (const u of users) {
             nameMap[u._id.toString()] = u.name;
         }
-        await this.messagesModel.updateMany({ room_id: room._id, sender_id: { $ne: data.userId }, isRead: false }, { $set: { isRead: true } });
+        await this.messagesModel.updateMany({ room_id: room._id, sender_id: { $ne: userId }, isRead: false }, { $set: { isRead: true } });
         const messages = await this.messagesModel
             .find({ room_id: room._id })
             .sort({ createdAt: 1 });
@@ -271,15 +289,19 @@ let socketService = class socketService {
         });
         return { success: true };
     }
-    async sendMessage(data) {
+    async sendMessage(data, client) {
         if (!data.message || !data.message.trim()) {
             return { success: false, message: '메시지를 입력해주세요.' };
+        }
+        const userId = this.socketUsers.get(client.id);
+        if (!userId) {
+            return { success: false, message: '로그인 해주세요.' };
         }
         const room = await this.chatroomsModel.findById(data.roomId);
         if (!room) {
             return { success: false, message: '존재하지 않는 채팅방입니다.' };
         }
-        const user = await this.userModel.findById(data.userId);
+        const user = await this.userModel.findById(userId);
         if (!user) {
             return { success: false, message: '로그인 해주세요.' };
         }
@@ -322,15 +344,17 @@ __decorate([
 __decorate([
     (0, websockets_1.SubscribeMessage)('send_chat'),
     __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
     __metadata("design:returntype", Promise)
 ], socketService.prototype, "sendChat", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('send_bid'),
     __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
     __metadata("design:returntype", Promise)
 ], socketService.prototype, "sendBid", null);
 __decorate([
@@ -344,8 +368,9 @@ __decorate([
 __decorate([
     (0, websockets_1.SubscribeMessage)('send_message'),
     __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
     __metadata("design:returntype", Promise)
 ], socketService.prototype, "sendMessage", null);
 exports.socketService = socketService = __decorate([
@@ -356,19 +381,20 @@ exports.socketService = socketService = __decorate([
         },
     }),
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_2.InjectModel)('users')),
-    __param(1, (0, mongoose_2.InjectModel)('image')),
-    __param(2, (0, mongoose_2.InjectModel)('audio')),
-    __param(3, (0, mongoose_2.InjectModel)('video')),
-    __param(4, (0, mongoose_2.InjectModel)('app')),
-    __param(5, (0, mongoose_2.InjectModel)('document')),
-    __param(6, (0, mongoose_2.InjectModel)('gyms')),
-    __param(7, (0, mongoose_2.InjectModel)('gymResults')),
-    __param(8, (0, mongoose_2.InjectModel)('gymBids')),
-    __param(9, (0, mongoose_2.InjectModel)('gymChats')),
-    __param(10, (0, mongoose_2.InjectModel)('chatrooms')),
-    __param(11, (0, mongoose_2.InjectModel)('messages')),
-    __metadata("design:paramtypes", [mongoose_1.Model,
+    __param(1, (0, mongoose_2.InjectModel)('users')),
+    __param(2, (0, mongoose_2.InjectModel)('image')),
+    __param(3, (0, mongoose_2.InjectModel)('audio')),
+    __param(4, (0, mongoose_2.InjectModel)('video')),
+    __param(5, (0, mongoose_2.InjectModel)('app')),
+    __param(6, (0, mongoose_2.InjectModel)('document')),
+    __param(7, (0, mongoose_2.InjectModel)('gyms')),
+    __param(8, (0, mongoose_2.InjectModel)('gymResults')),
+    __param(9, (0, mongoose_2.InjectModel)('gymBids')),
+    __param(10, (0, mongoose_2.InjectModel)('gymChats')),
+    __param(11, (0, mongoose_2.InjectModel)('chatrooms')),
+    __param(12, (0, mongoose_2.InjectModel)('messages')),
+    __metadata("design:paramtypes", [logService_1.logService,
+        mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model,

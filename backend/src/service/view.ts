@@ -3,15 +3,18 @@ import {Model, Types} from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { catchError } from 'rxjs';
 import { connected } from 'process';
+import { logService } from 'src/service/logService';
 
 @Injectable()
 export class ViewService {
 
   private modelMap: Record<string, Model<any>>;
   constructor(
+   private readonly logService: logService,
+
    @InjectModel('users')
    private readonly userModel: Model<any>,
-  
+
    @InjectModel('image')
    private readonly imageModel: Model<any>,
   
@@ -162,6 +165,9 @@ export class ViewService {
        const update = await collection.updateOne({_id:new Types.ObjectId(id),category:type},{$inc:{view_count:1}});
       const post_writer_is_me = await this.community_post_writer_is_me(viewer,id,type);
       const is_admin = await this.is_admin(viewer);
+
+      const viewerName = viewer ? name : '비회원';
+      await this.logService.write('post_view', `${viewerName}님이 "${post?.title ?? ''}" 게시글을 조회했습니다.`, viewer, viewer ? name : '', { post_id: id, category: type });
 
        return {post:post,name:name,writer_is_me:post_writer_is_me,is_admin:is_admin,message:"불러오기 성공"};
 

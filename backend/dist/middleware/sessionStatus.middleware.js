@@ -22,7 +22,7 @@ let SessionStatusMiddleware = class SessionStatusMiddleware {
         this.userModel = userModel;
     }
     async use(req, res, next) {
-        const userId = req.cookies?.user;
+        const userId = req.signedCookies?.user;
         if (!userId || !mongoose_1.Types.ObjectId.isValid(userId)) {
             return next();
         }
@@ -50,9 +50,9 @@ let SessionStatusMiddleware = class SessionStatusMiddleware {
         return next();
     }
     forceLogout(req, res) {
-        res.clearCookie('user', { httpOnly: true, path: '/' });
-        if (req.cookies) {
-            req.cookies.user = undefined;
+        res.clearCookie('user', { path: '/' });
+        if (req.signedCookies) {
+            req.signedCookies.user = undefined;
         }
     }
 };

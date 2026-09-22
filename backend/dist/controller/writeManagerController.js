@@ -33,26 +33,26 @@ let writeManagerController = class writeManagerController {
         }
     }
     async writer_delete(req, download_type, type, id) {
-        const ret = await this.writeManagerService.writer_delete(download_type, type, id, req.cookies.user);
+        const ret = await this.writeManagerService.writer_delete(download_type, type, id, req.signedCookies.user);
         return { success: ret.success, message: ret.message };
     }
     async community_write(type, req, data) {
-        const ret = await this.writeManagerService.community_write_ok(req.cookies.user, type, data);
+        const ret = await this.writeManagerService.community_write_ok(req.signedCookies.user, type, data);
         return { success: ret.success, message: ret.message };
     }
     async community_edit(type, id, req, data) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
-        const ret = await this.writeManagerService.community_edit_ok(req.cookies.user, id, type, data);
+        const ret = await this.writeManagerService.community_edit_ok(req.signedCookies.user, id, type, data);
         return { success: ret.success, message: ret.message, category: ret.category };
     }
     async file_edit(type, id, req, data) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
         const parsed = data ? JSON.parse(data) : {};
-        const ret = await this.writeManagerService.file_edit_ok(req.cookies.user, type, id, parsed);
+        const ret = await this.writeManagerService.file_edit_ok(req.signedCookies.user, type, id, parsed);
         return { success: ret.success, message: ret.message };
     }
 };

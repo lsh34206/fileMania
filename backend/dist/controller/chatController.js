@@ -33,21 +33,21 @@ let chatController = class chatController {
         }
     }
     async chat_main(req) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { name: null };
         }
-        const name = await this.login_auth(req.cookies.user);
+        const name = await this.login_auth(req.signedCookies.user);
         if (name === '로그인 해주세요.') {
             return { name: null };
         }
-        const ret = await this.chatService.main_load(req.cookies.user);
+        const ret = await this.chatService.main_load(req.signedCookies.user);
         if (ret === null) {
             return { name: null };
         }
         return { data: ret, name: name };
     }
     async chat_room(req, room_id) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { name: null };
         }
     }

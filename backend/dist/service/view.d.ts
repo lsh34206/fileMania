@@ -1,5 +1,7 @@
 import { Model } from "mongoose";
+import { logService } from "./logService";
 export declare class ViewService {
+    private readonly logService;
     private readonly userModel;
     private readonly imageModel;
     private readonly audioModel;
@@ -13,7 +15,7 @@ export declare class ViewService {
     private readonly community;
     private readonly purchaseModel;
     private modelMap;
-    constructor(userModel: Model<any>, imageModel: Model<any>, audioModel: Model<any>, videoModel: Model<any>, appModel: Model<any>, documentModel: Model<any>, gymsModel: Model<any>, gymResultsModel: Model<any>, gymBidsModel: Model<any>, gymChatsModel: Model<any>, community: Model<any>, purchaseModel: Model<any>);
+    constructor(logService: logService, userModel: Model<any>, imageModel: Model<any>, audioModel: Model<any>, videoModel: Model<any>, appModel: Model<any>, documentModel: Model<any>, gymsModel: Model<any>, gymResultsModel: Model<any>, gymBidsModel: Model<any>, gymChatsModel: Model<any>, community: Model<any>, purchaseModel: Model<any>);
     view_file(download_type: string, type: string, id: string, user_id: string): Promise<{
         file: any;
         name: any;

@@ -1,7 +1,9 @@
 import { Model } from "mongoose";
 import { xpService } from "./xpService";
+import { logService } from "./logService";
 export declare class UploadService {
     private readonly xpService;
+    private readonly logService;
     private readonly userModel;
     private readonly imageModel;
     private readonly audioModel;
@@ -13,7 +15,7 @@ export declare class UploadService {
     private readonly gymBidsModel;
     private readonly gymChatsModel;
     private modelMap;
-    constructor(xpService: xpService, userModel: Model<any>, imageModel: Model<any>, audioModel: Model<any>, videoModel: Model<any>, appModel: Model<any>, documentModel: Model<any>, gymsModel: Model<any>, gymResultsModel: Model<any>, gymBidsModel: Model<any>, gymChatsModel: Model<any>);
+    constructor(xpService: xpService, logService: logService, userModel: Model<any>, imageModel: Model<any>, audioModel: Model<any>, videoModel: Model<any>, appModel: Model<any>, documentModel: Model<any>, gymsModel: Model<any>, gymResultsModel: Model<any>, gymBidsModel: Model<any>, gymChatsModel: Model<any>);
     uploadFile({ file, data, userId, type, }: {
         file: Express.Multer.File;
         data: any;

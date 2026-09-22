@@ -17,6 +17,7 @@ import { socketModule } from "./socketModule";
 import { postActionController } from "src/controller/postActionController";
 import { usersSchema,filesSchema, gymsSchema, gymResultsSchema, gymBidsSchema, gymChatsSchema, communitySchema, chatroomSchema, messageSchema, pointChargeSchema, purchaseSchema } from "src/db/schema";
 import { ScheduleModule } from "@nestjs/schedule";
+import { ThrottlerModule } from "@nestjs/throttler";
 import { cornService } from "src/service/cronService";
 import { postActionService } from "src/service/postActionService";
 import { messageController } from "src/controller/messageController";
@@ -31,7 +32,7 @@ import { mediaController } from "src/controller/mediaController";
 import { xpService } from "src/service/xpService";
 import { adminController } from "src/controller/adminController";
 import { adminService } from "src/service/adminService";
-const mongoModule = MongooseModule.forRoot("mongodb+srv://lsh34206:shhs1004@cluster0.amaaaue.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",{dbName:"fileMania",connectionFactory: (connection) => {
+const mongoModule = MongooseModule.forRoot(process.env.MONGO_URI as string,{dbName:"fileMania",connectionFactory: (connection) => {
 console.log("loaded");
   connection.on('connected', () => {
     console.log('MongoDB connected');
@@ -66,7 +67,8 @@ const mongoSchema = MongooseModule.forFeature([{name:'users',schema:usersSchema}
     ViewService,downloadService,cornService,postActionService,messageService,chatService,paymentService,purchaseService,xpService,adminService,SessionStatusMiddleware],
   imports:[mongoModule,mongoSchema,
     socketModule,
-    ScheduleModule.forRoot()]
+    ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 20 }])]
 }
 )
 

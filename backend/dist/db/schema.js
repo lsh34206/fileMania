@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gymChatsSchema = exports.communitySchema = exports.gymResultsSchema = exports.gymBidsSchema = exports.gymsSchema = exports.filesSchema = exports.messageSchema = exports.chatroomSchema = exports.pointChargeSchema = exports.purchaseSchema = exports.usersSchema = void 0;
+exports.gymChatsSchema = exports.systemLogSchema = exports.communitySchema = exports.gymResultsSchema = exports.gymBidsSchema = exports.gymsSchema = exports.filesSchema = exports.messageSchema = exports.chatroomSchema = exports.pointChargeSchema = exports.purchaseSchema = exports.usersSchema = void 0;
 const mongoose_1 = require("mongoose");
 exports.usersSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
@@ -128,6 +128,18 @@ exports.communitySchema = new mongoose_1.Schema({
     comment: { type: Array, default: [] },
     comment_count: { type: Number, default: 0 },
     is_deleted: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now },
+});
+exports.systemLogSchema = new mongoose_1.Schema({
+    type: {
+        type: String,
+        required: true,
+        enum: ['login', 'auction', 'post_write', 'file_upload', 'comment_write', 'post_view', 'file_download', 'charge'],
+    },
+    message: { type: String, required: true },
+    user_id: { type: mongoose_1.Schema.Types.ObjectId, default: null },
+    user_name: { type: String, default: '' },
+    meta: { type: mongoose_1.Schema.Types.Mixed, default: {} },
     createdAt: { type: Date, default: Date.now },
 });
 exports.gymChatsSchema = new mongoose_1.Schema({

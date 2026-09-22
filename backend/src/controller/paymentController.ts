@@ -7,10 +7,10 @@ export class paymentController {
 
     @Post("point/order")
     async createOrder(@Req() req: any, @Body() body: { amount: number }) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
-        return await this.paymentService.createOrder(req.cookies.user, Number(body.amount));
+        return await this.paymentService.createOrder(req.signedCookies.user, Number(body.amount));
     }
 
     @Post("point/confirm")
@@ -18,11 +18,11 @@ export class paymentController {
         @Req() req: any,
         @Body() body: { paymentKey: string; orderId: string; amount: number },
     ) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
         return await this.paymentService.confirmPayment(
-            req.cookies.user,
+            req.signedCookies.user,
             body.paymentKey,
             body.orderId,
             Number(body.amount),

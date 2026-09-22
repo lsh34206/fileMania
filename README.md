@@ -5,7 +5,8 @@
 ## 주요 기능
 
 ### 회원 / 계정
-- 회원가입 / 로그인 / 로그아웃 (세션 쿠키 기반), 아이디·이름 중복 방지
+- 회원가입 / 로그인 / 로그아웃 (서명된 httpOnly 쿠키 기반 인증), 아이디·이름 중복 방지
+- 로그인·회원가입 요청 횟수 제한(rate limit)으로 무차별 대입 방어
 - 마이페이지: 내 정보, 자기소개 수정, 포인트 현황, 우편함
 - **레벨 / 경험치(XP)**: 활동에 따라 XP 획득 → 레벨업. 임계값은 10부터 레벨당 +10씩 증가하다가 100을 넘어서면 이후로는 ×1.2배씩 증가
   - 글 작성 +3 · 댓글 작성 +1 · 글 좋아요 받음 +3(자기 글 자기 좋아요는 제외) · 파일 업로드 +3 · 파일 구매 +5 · 포인트 충전 +30 · 경매 낙찰 +15
@@ -56,6 +57,16 @@
 | Frontend | React 19, Vite, TypeScript/JSX, React Router, Axios, socket.io-client, @tosspayments/tosspayments-sdk |
 | DB | MongoDB Atlas |
 
+## 보안
+
+- **인증**: 로그인에 성공하면 서버가 `COOKIE_SECRET`으로 HMAC 서명한 httpOnly 쿠키(`user`)를 발급합니다. 서명이 없거나 위조·변조된 쿠키는 서명 검증 단계에서 바로 거부되어, 다른 사용자의 ID를 추측해 쿠키를 조작하는 방식으로는 로그인할 수 없습니다.
+- **Socket.IO 인증**: 실시간 채팅/입찰/메시지 전송도 동일한 서명 쿠키 검증을 통과한 사용자만 가능합니다. 클라이언트가 소켓 메시지에 담아 보내는 사용자 ID는 신뢰하지 않고, 연결 시점에 서버가 검증한 값만 사용합니다.
+- **CSRF 방어**: 상태를 변경하는 요청(POST/PUT/PATCH/DELETE, 로그인·회원가입 제외)은 `X-Requested-With: XMLHttpRequest` 헤더가 없으면 차단됩니다. 프론트엔드는 axios 기본 헤더로 이 값을 자동 첨부하므로 별도 처리가 필요 없습니다.
+- **Rate limiting**: `/login_ok`는 분당 10회, `/singup_ok`는 분당 5회로 제한됩니다.
+- **파일 업로드**: 저장 경로(`image`/`video`/`audio`/`document`/`app`)는 화이트리스트로 검증하고, 저장 파일명은 원본 파일명 대신 서버가 생성한 랜덤 값을 사용해 경로 조작(path traversal)을 방지합니다. 업로드 용량은 500MB로 제한됩니다.
+- **민감정보 노출 방지**: `/mypage`, `/mypage/bio` 등 사용자 정보를 반환하는 응답에는 비밀번호 해시가 포함되지 않습니다.
+- **비밀키 관리**: `MONGO_URI`, `COOKIE_SECRET`, `TOSS_SECRET_KEY` 등 실제 비밀값이 담기는 `.env` 파일은 (하위 폴더 포함) 전부 git에서 제외됩니다. 저장소에 실수로 커밋된 적이 있다면 반드시 값을 교체하세요 — `.gitignore`에서 빠졌던 이력만 지운다고 안전해지지 않습니다.
+
 ## 프로젝트 구조
 
 ```
@@ -65,9 +76,9 @@ fileMania/
 │   │   ├── controller/   # 라우트 핸들러
 │   │   ├── service/      # 비즈니스 로직
 │   │   ├── module/       # NestJS 모듈 구성
-│   │   ├── middleware/   # 전역 미들웨어 (정지/차단 세션 검증 등)
+│   │   ├── middleware/   # 전역 미들웨어 (정지/차단 세션 검증, CSRF 방어 등)
 │   │   ├── db/           # Mongoose 스키마
-│   │   └── utils/        # 공통 유틸 (레벨 계산 등 프론트와 공유되는 순수 함수 포함)
+│   │   └── utils/        # 공통 유틸 (쿠키 서명 검증, 레벨 계산 등 — 레벨 계산 함수는 프론트와 공유)
 │   └── files/            # 업로드된 실제 파일 저장 위치 (image/video/audio/document/app)
 └── frontend/         # React + Vite 클라이언트 (포트 5173)
     └── src/
@@ -82,7 +93,7 @@ fileMania/
 ### 사전 준비
 
 - Node.js 20+
-- MongoDB Atlas 연결 문자열 (현재 `backend/src/module/module.ts`에 하드코딩되어 있음)
+- MongoDB Atlas 연결 문자열 (`backend/.env`의 `MONGO_URI`로 주입)
 - 포인트 충전 기능을 쓰려면 [TossPayments 개발자센터](https://developers.tosspayments.com)에서 발급받은 테스트 클라이언트 키 / 시크릿 키
 
 ### 설치
@@ -94,19 +105,32 @@ cd ../frontend && npm install
 
 ### 환경 변수
 
+`.env` 파일은 (하위 폴더 포함) git에 커밋되지 않습니다 — 아래 예시를 참고해 직접 생성하세요.
+
 `backend/.env` (`backend/.env.example` 참고):
 
 ```
+MONGO_URI=mongodb+srv://...
+FRONTEND_URI_VALUE=http://localhost:5173
+BACKEND_URI_VALUE=http://localhost:8080
 TOSS_SECRET_KEY=발급받은_시크릿_키
+COOKIE_SECRET=임의의_긴_랜덤_문자열
+NODE_ENV=development
 ```
+
+- `MONGO_URI`가 없으면 DB에 연결할 수 없어 서버가 정상 동작하지 않습니다.
+- `COOKIE_SECRET`은 로그인 인증 쿠키를 서명하는 데 쓰입니다. 비워두면 임시 기본값으로 동작하지만(콘솔에 경고 출력), 운영 환경에서는 반드시 직접 설정해야 합니다 — `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`로 생성할 수 있습니다.
+- `NODE_ENV=production`으로 배포할 때만 인증 쿠키에 `secure` 플래그가 붙습니다(HTTPS 환경 필요).
+- `TOSS_SECRET_KEY`가 없어도 포인트 충전 기능만 동작하지 않을 뿐 나머지 기능은 정상 작동합니다.
 
 `frontend/.env` (`frontend/.env.example` 참고):
 
 ```
+VITE_API_VALUE=http://localhost:8080
+VITE_BACKEND_URI_VALUE=http://localhost:8080
+VITE_SOCKETIO_URI_VALUE=http://localhost:8080
 VITE_TOSS_CLIENT_KEY=발급받은_클라이언트_키
 ```
-
-두 값이 없어도 포인트 충전 기능만 동작하지 않을 뿐 나머지 기능은 정상 작동합니다.
 
 ### 실행
 

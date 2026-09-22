@@ -21,10 +21,10 @@ let purchaseController = class purchaseController {
         this.purchaseService = purchaseService;
     }
     async purchase(req, type, id) {
-        if (!req.cookies.user) {
+        if (!req.signedCookies.user) {
             return { success: false, message: '로그인 해주세요.' };
         }
-        return await this.purchaseService.purchase(req.cookies.user, type, id);
+        return await this.purchaseService.purchase(req.signedCookies.user, type, id);
     }
 };
 exports.purchaseController = purchaseController;

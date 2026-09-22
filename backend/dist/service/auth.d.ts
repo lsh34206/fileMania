@@ -1,4 +1,5 @@
 import { Model } from "mongoose";
+import { logService } from "./logService";
 type singup_data_type = {
     name: string;
     id: string;
@@ -11,8 +12,9 @@ type login_data_type = {
     password: string;
 };
 export declare class authService {
+    private readonly logService;
     private readonly userModel;
-    constructor(userModel: Model<any>);
+    constructor(logService: logService, userModel: Model<any>);
     login_Load(userid: string): Promise<any>;
     role_Load(userid: string): Promise<any>;
     mypage_Load(userid: string): Promise<any>;

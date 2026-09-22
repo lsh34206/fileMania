@@ -1,10 +1,12 @@
 import { Model } from "mongoose";
 import { xpService } from "./xpService";
+import { logService } from "./logService";
 export declare class paymentService {
     private readonly xpService;
+    private readonly logService;
     private readonly userModel;
     private readonly pointChargeModel;
-    constructor(xpService: xpService, userModel: Model<any>, pointChargeModel: Model<any>);
+    constructor(xpService: xpService, logService: logService, userModel: Model<any>, pointChargeModel: Model<any>);
     createOrder(userId: string, amount: number): Promise<{
         success: boolean;
         message: string;

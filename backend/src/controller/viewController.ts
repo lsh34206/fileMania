@@ -25,7 +25,7 @@ export class viewController{
     @Post("/download/gym/:type")
     async gym_view(@Req() req:any,@Param("type") type:string,@Body("keyword") keyword:string){
 
-        const name = await this.login_auth(req.cookies.user);
+        const name = await this.login_auth(req.signedCookies.user);
 
 
         const files =  await this.listViewService.gym_view(type,name,keyword);
@@ -35,7 +35,7 @@ export class viewController{
     @Post("/download/free/:type")
     async free_view(@Req() req:any, @Param("type") type:string,@Body("keyword") keyword:string){
 
-            const name = await this.login_auth(req.cookies.user);
+            const name = await this.login_auth(req.signedCookies.user);
 const files =  await this.listViewService.free_view(type,name,keyword);
 
 return {files:files.files,id:files.id,writer_is_me:files.writer_is_me};
@@ -45,7 +45,7 @@ return {files:files.files,id:files.id,writer_is_me:files.writer_is_me};
 @Post("/download/paid/:type")
 async paid_view(@Req() req:any, @Param("type") type:string,@Body("keyword") keyword:string){
 
-        const name = await this.login_auth(req.cookies.user);
+        const name = await this.login_auth(req.signedCookies.user);
 const files =  await this.listViewService.paid_view(type,name,keyword);
 
 return {files:files.files,id:files.id,writer_is_me:files.writer_is_me};
@@ -61,7 +61,7 @@ async view_file(@Req() req:any,
 
 if(download_type==="gym"){
 
-    const ret = await this.viewService.gym_view(download_type,type,id,req.cookies.user);
+    const ret = await this.viewService.gym_view(download_type,type,id,req.signedCookies.user);
 
     return { file:ret.file,name:ret.name,writer_is_me:ret.writer_is_me,id:ret.id,user_id:ret.user_id,
         chatList:ret.chatList,
@@ -71,7 +71,7 @@ if(download_type==="gym"){
 
 
 }else{
-           const ret = await this.viewService.view_file(download_type,type,id,req.cookies.user);
+           const ret = await this.viewService.view_file(download_type,type,id,req.signedCookies.user);
 
         return {file:ret.file,name:ret.name,writer_is_me:ret.writer_is_me,id:ret.id,purchased:ret.purchased};
 }
@@ -87,10 +87,15 @@ async community_featured(){
     return { post: ret.post, kind: ret.kind };
 }
 
+@Get("/home_stats")
+async home_stats(){
+    return await this.listViewService.home_stats();
+}
+
 @Post("/community/:type")
 async commuity_list_view(@Param("type") type:string,@Req() req:any,@Body("keyword") keyword:string,@Body("sort") sort:string){
     try{
-        const name= await this.login_auth(req.cookies.user);
+        const name= await this.login_auth(req.signedCookies.user);
 
         const ret = await this.listViewService.community_list_view(type,name,keyword,sort);
 
@@ -105,10 +110,8 @@ async commuity_list_view(@Param("type") type:string,@Req() req:any,@Body("keywor
 async commuity_post_load(@Param("type") type:string,@Param("id") id : string,@Req() req:any,@Res({passthrough: true}) res:any){
     try{
         
-        const viewer = req.cookies.user;
-        console.log(viewer);
-const name = await this.login_auth(viewer);
-console.log(name);
+        const viewer = req.signedCookies.user;
+        const name = await this.login_auth(viewer);
         const cookieKey = `viewed_${viewer}`;
         const alreadyViewed = req.cookies[cookieKey];
         if(!alreadyViewed){
@@ -116,6 +119,8 @@ console.log(name);
          res.cookie(cookieKey, 'true', {
         maxAge: 12 * 60 * 60 * 1000, // 12시간
         httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
       });
       
        const ret = await this.viewService.community_post_count_view(type,id,name,viewer);

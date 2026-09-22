@@ -4,6 +4,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { makeIdUtils } from "src/utils/makeId";
 import { DateUtils } from "src/utils/dateUtils";
 import { xpService } from "src/service/xpService";
+import { logService } from "src/service/logService";
 
 const MIN_CHARGE_AMOUNT = 1000;
 const MAX_CHARGE_AMOUNT = 1000000;
@@ -12,6 +13,7 @@ const MAX_CHARGE_AMOUNT = 1000000;
 export class paymentService {
     constructor(
         private readonly xpService: xpService,
+        private readonly logService: logService,
 
         @InjectModel('users')
         private readonly userModel: Model<any>,
@@ -119,9 +121,11 @@ export class paymentService {
             charge.user_id,
             { $inc: { point: amount } },
             { new: true },
-        ).select('point');
+        ).select('point name');
 
         await this.xpService.addXp(charge.user_id.toString(), 30);
+
+        await this.logService.write('charge', `${user?.name ?? ''}님이 ${amount.toLocaleString()}P를 충전했습니다.`, charge.user_id.toString(), user?.name ?? '', { order_id: orderId, amount });
 
         return { success: true, message: '충전이 완료되었습니다.', point: user?.point ?? 0 };
     }

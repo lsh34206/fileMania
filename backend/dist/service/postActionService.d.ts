@@ -1,11 +1,13 @@
 import { Model } from "mongoose";
 import { xpService } from "./xpService";
+import { logService } from "./logService";
 export declare class postActionService {
     private readonly xpService;
+    private readonly logService;
     private readonly userModel;
     private readonly community;
     private modelMap;
-    constructor(xpService: xpService, userModel: Model<any>, community: Model<any>);
+    constructor(xpService: xpService, logService: logService, userModel: Model<any>, community: Model<any>);
     community_post_like(postId: string, userId: string): Promise<{
         like_count: any;
         message: string;

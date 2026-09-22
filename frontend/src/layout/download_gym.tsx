@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import '../App.css'
 import {DateUtils} from '../../../backend/src/utils/dateUtils'
+import StatsBanner from './statsBanner'
 
 
 function FileListGym() {
@@ -67,6 +68,7 @@ function FileListGym() {
 	return (
 		<div className='page'>
 			<h1 className='page-title'>경매 다운로드</h1>
+			<StatsBanner />
 			<div className='tabs'>
 				<button className='tab' onClick={() => setCategory('image')}>이미지</button>
 				<button className='tab' onClick={() => setCategory('video')}>비디오</button>

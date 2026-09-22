@@ -28,6 +28,7 @@ const socketModule_1 = require("./socketModule");
 const postActionController_1 = require("../controller/postActionController");
 const schema_1 = require("../db/schema");
 const schedule_1 = require("@nestjs/schedule");
+const throttler_1 = require("@nestjs/throttler");
 const cronService_1 = require("../service/cronService");
 const postActionService_1 = require("../service/postActionService");
 const messageController_1 = require("../controller/messageController");
@@ -42,7 +43,7 @@ const mediaController_1 = require("../controller/mediaController");
 const xpService_1 = require("../service/xpService");
 const adminController_1 = require("../controller/adminController");
 const adminService_1 = require("../service/adminService");
-const mongoModule = mongoose_1.MongooseModule.forRoot("mongodb+srv://lsh34206:shhs1004@cluster0.amaaaue.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", { dbName: "fileMania", connectionFactory: (connection) => {
+const mongoModule = mongoose_1.MongooseModule.forRoot(process.env.MONGO_URI, { dbName: "fileMania", connectionFactory: (connection) => {
         console.log("loaded");
         connection.on('connected', () => {
             console.log('MongoDB connected');
@@ -81,7 +82,8 @@ exports.mainModule = mainModule = __decorate([
             view_1.ViewService, download_1.downloadService, cronService_1.cornService, postActionService_1.postActionService, messageService_1.messageService, chatService_1.chatService, paymentService_1.paymentService, purchaseService_1.purchaseService, xpService_1.xpService, adminService_1.adminService, sessionStatus_middleware_1.SessionStatusMiddleware],
         imports: [mongoModule, mongoSchema,
             socketModule_1.socketModule,
-            schedule_1.ScheduleModule.forRoot()]
+            schedule_1.ScheduleModule.forRoot(),
+            throttler_1.ThrottlerModule.forRoot([{ ttl: 60000, limit: 20 }])]
     }),
     __metadata("design:paramtypes", [])
 ], mainModule);

@@ -20,7 +20,7 @@ export class downloadController{
     @Param("type") type: string,
     @Param("id") id: string, @Res() res:Response){
         try{
-            const result = await this.downloadService.download_file(type,id,req.cookies.user);
+            const result = await this.downloadService.download_file(type,id,req.signedCookies.user);
 
 
             if (!result.success || !result.path || !result.name) {

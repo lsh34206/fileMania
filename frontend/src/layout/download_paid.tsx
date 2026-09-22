@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import '../App.css'
+import StatsBanner from './statsBanner'
 
 function FileListPaid() {
 	const [category, setCategory] = useState('image')
@@ -68,6 +69,7 @@ function FileListPaid() {
 	return (
 		<div className='page'>
 			<h1 className='page-title'>유료 다운로드</h1>
+			<StatsBanner />
 			<div className='tabs'>
 				<button className='tab' onClick={() => setCategory('image')}>이미지</button>
 				<button className='tab' onClick={() => setCategory('video')}>비디오</button>

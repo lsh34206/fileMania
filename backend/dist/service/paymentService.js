@@ -19,14 +19,17 @@ const mongoose_2 = require("@nestjs/mongoose");
 const makeId_1 = require("../utils/makeId");
 const dateUtils_1 = require("../utils/dateUtils");
 const xpService_1 = require("./xpService");
+const logService_1 = require("./logService");
 const MIN_CHARGE_AMOUNT = 1000;
 const MAX_CHARGE_AMOUNT = 1000000;
 let paymentService = class paymentService {
     xpService;
+    logService;
     userModel;
     pointChargeModel;
-    constructor(xpService, userModel, pointChargeModel) {
+    constructor(xpService, logService, userModel, pointChargeModel) {
         this.xpService = xpService;
+        this.logService = logService;
         this.userModel = userModel;
         this.pointChargeModel = pointChargeModel;
     }
@@ -109,17 +112,19 @@ let paymentService = class paymentService {
                 approved_at: tossData.approvedAt ?? dateUtils_1.DateUtils.now_date(),
             },
         });
-        const user = await this.userModel.findByIdAndUpdate(charge.user_id, { $inc: { point: amount } }, { new: true }).select('point');
+        const user = await this.userModel.findByIdAndUpdate(charge.user_id, { $inc: { point: amount } }, { new: true }).select('point name');
         await this.xpService.addXp(charge.user_id.toString(), 30);
+        await this.logService.write('charge', `${user?.name ?? ''}님이 ${amount.toLocaleString()}P를 충전했습니다.`, charge.user_id.toString(), user?.name ?? '', { order_id: orderId, amount });
         return { success: true, message: '충전이 완료되었습니다.', point: user?.point ?? 0 };
     }
 };
 exports.paymentService = paymentService;
 exports.paymentService = paymentService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, mongoose_2.InjectModel)('users')),
-    __param(2, (0, mongoose_2.InjectModel)('pointCharges')),
+    __param(2, (0, mongoose_2.InjectModel)('users')),
+    __param(3, (0, mongoose_2.InjectModel)('pointCharges')),
     __metadata("design:paramtypes", [xpService_1.xpService,
+        logService_1.logService,
         mongoose_1.Model,
         mongoose_1.Model])
 ], paymentService);

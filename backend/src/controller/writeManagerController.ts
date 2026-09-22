@@ -31,7 +31,7 @@ export class writeManagerController{
     @Param("type") type: string,
     @Param("id") id: string){
 
-        const ret = await this.writeManagerService.writer_delete(download_type,type,id,req.cookies.user);
+        const ret = await this.writeManagerService.writer_delete(download_type,type,id,req.signedCookies.user);
 
 return {success:ret.success, message:ret.message}
 
@@ -44,7 +44,7 @@ return {success:ret.success, message:ret.message}
     @Body("data") data:string){
 
 
-        const ret = await this.writeManagerService.community_write_ok(req.cookies.user,type,data)
+        const ret = await this.writeManagerService.community_write_ok(req.signedCookies.user,type,data)
 
         return {success:ret.success, message:ret.message}
     }
@@ -56,11 +56,11 @@ return {success:ret.success, message:ret.message}
     @Req() req:any,
     @Body("data") data:string){
 
-        if(!req.cookies.user){
+        if(!req.signedCookies.user){
             return { success:false, message:'로그인 해주세요.' };
         }
 
-        const ret = await this.writeManagerService.community_edit_ok(req.cookies.user,id,type,data);
+        const ret = await this.writeManagerService.community_edit_ok(req.signedCookies.user,id,type,data);
 
         return { success:ret.success, message:ret.message, category:ret.category };
     }
@@ -72,12 +72,12 @@ return {success:ret.success, message:ret.message}
     @Req() req:any,
     @Body("data") data:string){
 
-        if(!req.cookies.user){
+        if(!req.signedCookies.user){
             return { success:false, message:'로그인 해주세요.' };
         }
 
         const parsed = data ? JSON.parse(data) : {};
-        const ret = await this.writeManagerService.file_edit_ok(req.cookies.user,type,id,parsed);
+        const ret = await this.writeManagerService.file_edit_ok(req.signedCookies.user,type,id,parsed);
 
         return { success:ret.success, message:ret.message };
     }
